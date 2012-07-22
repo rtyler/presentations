@@ -1,0 +1,299 @@
+#!/usr/bin/env pinpoint
+
+[fill]
+[white]
+[center]
+[text-align=center]
+[bg.jpg]
+
+-- [airplane_500.jpg]
+
+Rebuilding the airplane at 10 000m
+Continuous Deployment with Jenkins and Gerrit
+
+-- [lookout_frontdesk.jpg] [right]
+
+I work for Lookout
+
+-- [terminal_ruby.png]
+
+Hacking with Ruby
+
+(<i>not that it's important</i>)
+
+--
+
+Let's talk about:
+<b>continuous deployment</b>
+
+--
+
+What it is:
+<span weight="bold" foreground="red">NOT</span>
+
+-- [broken_table.jpg]
+
+"Release <i>everything</i>
+as soon as possible!"
+
+# (photo by thomen: <http://www.flickr.com/photos/thomen/364890522/>)
+
+-- [broken_table.jpg]
+
+"Great! No need for a QA team"
+
+-- [broken_table.jpg]
+
+"Our users will be our testers!"
+
+--
+
+Continuous Deployment
+is about
+
+--
+
+<b>stability</b>
+
+--
+
+<b>Faster</b>
+and
+<b>More Often</b>
+
+-- [left] [text-align=left]
+
+* High confidence in changes that are about to be released
+* Good procedures for rapid deployment
+* Near-instant system feedback from the production environment
+
+--
+
+Continuous Deployment is
+<span weight="bold" foreground="green">GOOD</span>
+
+--
+
+<i>in the olden days</i>
+
+--
+
+Subversion branches for releases
+
+TODO: create background image
+
+--- [top]
+
+10-18 days per release branch
+
+--
+
+very little automation
+
+--
+
+:(
+
+--
+
+<b>Sadness with Numbers</b>
+
+--
+
+<b>36%</b>
+of deployments failed
+
+--
+
+<b>68</b>
+commits per deployment
+
+--
+
+<b>62%</b>
+of deployments missed
+their target date
+
+--
+
+(<i>that sucks</i>)
+
+--
+
+Let's <b>fix</b> this.
+
+-- [robot_assembly.jpg]
+
+Step One:
+<b>Automate</b>
+
+-- [robot_assembly.jpg]
+
+s/Bitten/Jenkins/
+
+# I won't tell you too much about Bitten, but it's not a great tool and we had
+# a number of issues with it:
+#   * Practically zero developer insight into the test/build process
+#   * All the tests ran on *one* build machine which was hand-crafted by the
+#     Operations team for the task
+#   * We would constantly have issues with Bitten losing track of test
+#     processes
+# We installed Jenkins and started to work on migration "jobs" over to Jenkins.
+#
+# Since our Bitten installation was so backwards, we ended up building a number
+# of jobs "from scratch."
+
+-- [robot_assembly.jpg]
+
+"Why don't our tests pass?"
+
+# The first major issue we had was that we noticed that we had tests that
+# didn't actually *pass* reliably. Previously this was hidden from us, but
+# after running the tests after every commit with Jenkins, we noticed that we
+# had some technical debt in the test suite
+
+-- [robot_assembly.jpg]
+
+"We need build machines!"
+
+# Once we started running more tests more often with Jenkins we found out very
+# quickly that we needed to start to create a build slave infrastructure.
+#
+# For the first few months we relied on a hand-crafted VMWare snapshot, which
+# we used to start up a pool of machines that all looked the same
+
+--
+
+Step Two
+<b>Die Subversion, Die</b>
+
+--
+
+(<i>I don't like SVN</i>)
+
+--
+
+<b>Git + Gerrit</b>
+
+
+# I'm going to assume you know about Git or at least some kind of distributed
+# version control system, so let me tell you about Gerrit.
+
+--
+
+
+<b>Gerrit</b>
+
+
+# Gerrit is a Git-based code review tool
+# TODO: Fill this in more
+
+--
+
+<b>Git + Gerrit</b>
+at the same time!
+
+# We switched from Subversion directly to Git and Gerrit, all at once.
+#
+# Instead of introducing Git as a separate tool to developers, we introduced
+# at the same time so developers never learned a Git-based workflow that
+# *didn't* involve Gerrit at its core.
+
+--
+
+"Pre-tested" Commits
+
+# An integral part of our Git + Gerrit workflow involved pre-testing commits.
+#
+# The whole concept behind "pre-testing" a commit is that only changes which
+# have passed the "tests" will be allowed to be integrated or merged.
+
+--
+
+Featuring the:
+<b>Gerrit Trigger plugin</b>
+
+--
+
+Git + Gerrit
+<b>Training the Team</b>
+
+# We scheduled 3 different 1 hour training sessions with various groups of
+# engineers in order to provide a hands-on walk-through of the Git + Gerrit
+# workflow
+#
+# This included a fully set-up "demo" project to use for experimentation of
+# creating commits, code reviewing them, verifying them with Jenkins and
+# finally merging them into the "master" bracnh
+
+--
+
+Document <i>everything</i>
+
+# During the course of these training sessions, we used the feedback and common
+# problems encountered by engineers to fill out a "getting started" wiki page
+# which new hires now use to come up to speed with Git + Gerrit.
+
+--
+
+<b>Recap</b>
+
+# TODO: Diagram and cover "the world thus far"
+
+--
+
+Step Three
+<b>Automate <i>Everything</i></b>
+
+--
+
+More slaves!
+
+--
+
+Managing slaves?
+
+--
+
+New kinds of tests!
+
+--
+
+Automating <b>deployment</b>
+
+# First automating with `infra_update_faithful2` then moving into the
+# `infra_deploy_qa` territory. Finally automating the actual deployment of
+# production
+--
+
+Deploying the test environment
+
+
+# Once the deployment of our test environment was managed through Jenkins,
+# we created pipelines with Jenkins, chaining off of a successful
+# deployment to the test environment.
+#
+# TODO: Discuss selenium testing/SI testing after QA deploy
+--
+
+Deploying the <i>production</i> environment
+
+# TODO: Discuss the use of build promotions to stage, deploy and finally mark
+# the deployment as successful
+
+--
+
+<b>TODO</b>
+
+--
+
+(<i>nobody's perfect</i>)
+
+--
+
+* Haven't automated the rollback of production
+* Not nearly enough stages/production clusters to run Selenium tests per-commit
+* Not enough real-time feedback from production
+* No production acceptance testing
+* Tests take a LONG time
+* Still only doing a single daily deployment, facing the same issues we did before with 2 week deployment, but on a smaller scale
