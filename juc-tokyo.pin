@@ -8,8 +8,11 @@
 
 -- [airplane_500.jpg]
 
-Rebuilding the airplane at 10 000m
+<span size="large" weight="heavy">Rebuilding the airplane at 10 000m</span>
 Continuous Deployment with Jenkins and Gerrit
+
+<span size="xx-small">R. Tyler Croy
+tyler@linux.com</span>
 
 -- [lookout_frontdesk.jpg] [right]
 
@@ -19,17 +22,21 @@ I work for Lookout
 
 Hacking with Ruby
 
-(<i>not that it's important</i>)
-
 --
 
 Let's talk about:
 <b>continuous deployment</b>
 
---
+-- [cd-jira.png]
 
 What it is:
-<span weight="bold" foreground="red">NOT</span>
+<span weight="bold" size="large" foreground="red">NOT</span>
+
+# First, I want to mention what Continuous Deployment is not about.
+#
+# Above all else, it is not something you do *once* and then you're finished
+# and you can move on. Continous Deployment is a process and mind-set you and
+# your team stick with
 
 -- [broken_table.jpg]
 
@@ -51,26 +58,32 @@ as soon as possible!"
 Continuous Deployment
 is about
 
---
+# Continous Deployment, in my opinion, is all about ->
+
+-- [norris_test_trend.png] [fit]
 
 <b>stability</b>
+
+# stability. It is about being able to deploy changes ->
 
 --
 
 <b>Faster</b>
-and
-<b>More Often</b>
+with
+<b>More Confidence</b>
 
--- [left] [text-align=left]
-
-* High confidence in changes that are about to be released
-* Good procedures for rapid deployment
-* Near-instant system feedback from the production environment
+# Continuous Deployment is about releasing changes faster, and with more
+# confidence in the changes you're preparing the release.
+#
+# In order to make that happen, it is important to have *good* procedures for
+# rapid deployment and an excellent feedback loop from production. These two
+# factors, above anything else will enable you to ship code rapidly and
+# maintain quality.
 
 --
 
 Continuous Deployment is
-<span weight="bold" foreground="green">GOOD</span>
+<span weight="heavy" size="large" foreground="green">GOOD</span>
 
 --
 
@@ -100,21 +113,20 @@ very little automation
 
 --
 
-<b>36%</b>
+<span size="xx-large" weight="bold">36%</span>
 of deployments failed
 
 --
 
-<b>68</b>
+<span size="xx-large" weight="bold">68</span>
 commits per deployment
 
 --
 
-<b>62%</b>
-of deployments missed
-their target date
+<span size="xx-large" weight="bold">62%</span>
+of deployments slipped
 
---
+-- [sad-cat.jpg] [top]
 
 (<i>that sucks</i>)
 
@@ -129,7 +141,8 @@ Step One:
 
 -- [robot_assembly.jpg]
 
-s/Bitten/Jenkins/
+<span strikethrough="true">Bitten</span>
+<span weight="bold">Jenkins</span>
 
 # I won't tell you too much about Bitten, but it's not a great tool and we had
 # a number of issues with it:
@@ -179,8 +192,7 @@ Step Two
 # I'm going to assume you know about Git or at least some kind of distributed
 # version control system, so let me tell you about Gerrit.
 
---
-
+-- [gerrit-screenshot-bg.png]
 
 <b>Gerrit</b>
 
@@ -188,7 +200,7 @@ Step Two
 # Gerrit is a Git-based code review tool
 # TODO: Fill this in more
 
---
+-- [gerrit-workflow.png] [top]
 
 <b>Git + Gerrit</b>
 at the same time!
@@ -198,20 +210,6 @@ at the same time!
 # Instead of introducing Git as a separate tool to developers, we introduced
 # at the same time so developers never learned a Git-based workflow that
 # *didn't* involve Gerrit at its core.
-
---
-
-"Pre-tested" Commits
-
-# An integral part of our Git + Gerrit workflow involved pre-testing commits.
-#
-# The whole concept behind "pre-testing" a commit is that only changes which
-# have passed the "tests" will be allowed to be integrated or merged.
-
---
-
-Featuring the:
-<b>Gerrit Trigger plugin</b>
 
 --
 
@@ -234,6 +232,33 @@ Document <i>everything</i>
 # problems encountered by engineers to fill out a "getting started" wiki page
 # which new hires now use to come up to speed with Git + Gerrit.
 
+-- [gerrit-pretested-workflow.png] [top]
+
+"Pre-tested" Commits
+
+# An integral part of our Git + Gerrit workflow involved pre-testing commits.
+#
+# The whole concept behind "pre-testing" a commit is that only changes which
+# have passed the "tests" will be allowed to be integrated or merged.
+
+--
+
+Featuring the:
+<b>Gerrit Trigger plugin</b>
+
+--
+
+"We need more builders!"
+
+# When we first started moving things into Jenkins we had 3 slaves that were
+# properly configured for running our tests. As we started using pre-tested
+# commits with Gerrit and Jenkins, we *very* quickly realized that we needed
+#
+# In the very early stages of this, we used the same hand-crafted VM base image
+# with VMWare ESX, and then spun up multiple new machines.
+#
+# This process has changed a bit since then, which I'll dig into in a moment
+
 --
 
 <b>Recap</b>
@@ -244,10 +269,6 @@ Document <i>everything</i>
 
 Step Three
 <b>Automate <i>Everything</i></b>
-
---
-
-More slaves!
 
 --
 
@@ -297,3 +318,30 @@ Deploying the <i>production</i> environment
 * No production acceptance testing
 * Tests take a LONG time
 * Still only doing a single daily deployment, facing the same issues we did before with 2 week deployment, but on a smaller scale
+
+--
+
+<b>Happiness with Numbers</b>
+
+--
+
+<span size="xx-large" weight="bold">2%</span>
+of deployments failed
+
+--
+
+<span size="xx-large" weight="bold">14</span>
+commits per deployment
+
+--
+
+<span size="xx-large" weight="bold">3%</span>
+of deployments slipped
+
+-- [happy-cat.jpg] [top]
+
+(<i>that <b>rocks!</b></i>)
+
+--
+
+Questions?
