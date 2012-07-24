@@ -5,7 +5,6 @@
 [center]
 [text-align=center]
 [bg.jpg]
-[duration=45.0]
 
 -- [airplane_500.jpg]
 
@@ -130,6 +129,10 @@ with
 Continuous Deployment is
 <span weight="heavy" size="large" foreground="green">GOOD</span>
 
+# Continuous Deployment is GOOD for your organization. Even if you don't end up
+# rapidly deploying your software, the practice of *striving* for continuous
+# deployment will help improve so many other parts of your development process
+
 -- [lookout_frontdesk.jpg] [right]
 
 Meanwhile at Lookout
@@ -144,28 +147,31 @@ Subversion branches for releases
 
 --
 
+manual code review
+
+# TODO: Fill out a good description of code review pre-git+gerrit
+
+--
+
 very little automation
 
 --
 
 <b>Sadness with Numbers</b>
 
---
-
+-- [sad-cat.jpg] [top]
 <span size="xx-large" weight="bold">36%</span>
 of deployments failed
 
---
+-- [sad-cat.jpg] [top]
 
 <span size="xx-large" weight="bold">68</span>
 commits per deployment
 
---
+-- [sad-cat.jpg] [top]
 
 <span size="xx-large" weight="bold">62%</span>
 of deployments slipped
-
--- [sad-cat.jpg] [top]
 
 --
 
@@ -197,10 +203,17 @@ Step One:
 # after running the tests after every commit with Jenkins, we noticed that we
 # had some technical debt in the test suite
 
+-- [robot_assembly.jpg]
+
+Never stop automating.
+
+# TODO: Need to dive into how automation is an on-going commitment
+
 -- [good-tools.jpg]
 
 Step Two
-<b>Use better tools</b>
+<b>Better tools,
+processes</b>
 
 # The second important step we took towards continuous deployment was to use
 # *better* tools and processes than we were using
@@ -217,13 +230,35 @@ Step Two
 
 -- [good-tools.jpg]
 
+<b>Git</b>
+
+# Git can be used a number of different ways, there's the familiar ->
+
+-- [git-centralized.png] [fit]
+
+centralized workflow
+
+# This is more common for smaller companies
+
+-- [git-integration-manager.png] [fit]
+
+integration manager
+workflow
+
+# This is common for GitHub-based projects
+
+-- [git-lieutenants.png] [fit]
+
+lieutenants workflow
+
+# This is how the Linux kernel is developed
+
+-- [gerrit-repo-layout.png] [fit]
+
 <b>Git + Gerrit</b>
 
 # Git and Gerrit
 #
-# I'm going to assume you know about Git or at least some kind of distributed
-# version control system, so let me tell you about Gerrit.
-
 -- [gerrit-screenshot-bg.png]
 
 <b>Gerrit</b>
@@ -237,6 +272,16 @@ code review
 -- [collab-diff.png] [top]
 
 collaboration
+
+-- [gerrit-workflow.png] [top]
+
+Developer Workflow
+
+# What this means for an individual developer is that they can iterate on their
+# code in Gerrit, based on feedback from their colleagues.
+#
+# Once the code is all polished up, it can then be integrated into the "main"
+# repository
 
 -- [gerrit-workflow.png] [top]
 
