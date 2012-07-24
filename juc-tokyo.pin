@@ -283,6 +283,29 @@ Developer Workflow
 # Once the code is all polished up, it can then be integrated into the "main"
 # repository
 
+-- [gerrit-pretested-workflow.png] [top]
+
+"Pre-tested" Commits
+
+# An integral part of our Git + Gerrit workflow involved pre-testing commits.
+#
+# The whole concept behind "pre-testing" a commit is that only changes which
+# have passed the "tests" will be allowed to be integrated or merged.
+
+-- [gerrit-trigger-diagram.png] [fit]
+
+<b>Gerrit Trigger plugin</b>
+
+
+# Gerrit Trigger plugin
+
+-- [trigger-feedback.png] [top]
+
+Feedback in Gerrit
+
+-- [gerrit-pretested-workflow.png] [top]
+
+The Cycle
 -- [gerrit-workflow.png] [top]
 
 # TODO: Perhaps this should go after the pre-tested commits bit
@@ -312,29 +335,6 @@ Training the team
 # problems encountered by engineers to fill out a "getting started" wiki page
 # which new hires now use to come up to speed with Git + Gerrit.
 
--- [gerrit-pretested-workflow.png] [top]
-
-"Pre-tested" Commits
-
-# An integral part of our Git + Gerrit workflow involved pre-testing commits.
-#
-# The whole concept behind "pre-testing" a commit is that only changes which
-# have passed the "tests" will be allowed to be integrated or merged.
-
--- [gerrit-trigger-diagram.png] [fit]
-
-<b>Gerrit Trigger plugin</b>
-
-
-# Gerrit Trigger plugin
-
--- [trigger-feedback.png] [top]
-
-Feedback in Gerrit
-
--- [gerrit-pretested-workflow.png] [top]
-
-The Cycle
 
 --
 
@@ -363,21 +363,6 @@ Step Three
 
 --
 
-Managing slaves?
-
---
-
-New kinds of tests!
-
---
-
-Automating <b>deployment</b>
-
-# First automating with `infra_update_faithful2` then moving into the
-# `infra_deploy_qa` territory. Finally automating the actual deployment of
-# production
---
-
 Deploying the test environment
 
 
@@ -386,16 +371,58 @@ Deploying the test environment
 # deployment to the test environment.
 #
 # TODO: Discuss selenium testing/SI testing after QA deploy
+
 --
 
-Deploying the <i>production</i> environment
+New kinds of tests!
+
+# TODO: Discuss Jasmine/Selenium tests with Sauce Labs
+
+
+-- [release-automation.png] [fit] [top]
+
+Automating <b>deployment</b>
+
+# First automating with `infra_update_faithful2` then moving into the
+# `infra_deploy_qa` territory. Finally automating the actual deployment of
+# production
+
+
+-- [release-automation-to-prod.png] [fit] [top]
+
+Deploying to the
+<i>production</i> environment
 
 # TODO: Discuss the use of build promotions to stage, deploy and finally mark
 # the deployment as successful
 
+
+-- [android-army.jpg]
+
+Step Four
+<b>More Robots</b>
+
+-- [android-army.jpg]
+
+<b>OpenStack</b>
+<span style="italic" size="xx-small">and the</span>
+jclouds plugin
+
+# TODO: Discuss the investment in OpenStack for adding more build capacity.
+# Looking forward to the work done with the jclouds plugin 
+
+-- [android-army.jpg]
+
+<b>Slave Management</b>
+<span style="italic" size="xx-small">with</span>
+Puppet
+
+
+# TODO: discuss Puppetizing the slave machines
 --
 
 <b>TODO</b>
+
 
 --
 
