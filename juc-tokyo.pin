@@ -5,6 +5,7 @@
 [center]
 [text-align=center]
 [bg.jpg]
+[duration=45.0]
 
 -- [airplane_500.jpg]
 
@@ -14,25 +15,50 @@ Continuous Deployment with Jenkins and Gerrit
 <span size="xx-small">R. Tyler Croy
 tyler@linux.com</span>
 
+# Hello and thanks for coming. I'm R. Tyler Croy, and today I'm going to talk
+# to you about two things at the same time!
+#
+# I'm going to tell you how we rebuilt our engineering organization
+# "mid-flight" for Continuous Deployment and at the same time, I'm going to
+# tell you how you can too with Jenkins and Gerrit
+
 -- [lookout_frontdesk.jpg] [right]
 
 I work for Lookout
 
+# First of all, I work at Lookout Mobile Security, if you're an Android user
+# you might already be familiar with some of our products.
+#
+# If you're not familar with us, we are primarily known for our security app on
+# Android.
+#
+# My job at Lookout primarily involves ->
+
 -- [terminal_ruby.png]
 
 Hacking with Ruby
+
+# Hacking with Ruby, you see while we have a nice fancy Java-based Android
+# application, we also have a *large* server-backend which handles device
+# notifications, backups, analysis and much more.
+#
+# That entire backend is written in Ruby, and can benefit from ->
 
 --
 
 Let's talk about:
 <b>continuous deployment</b>
 
+# Continuous Deployment.
+#
+# Before I talk too much about what it *is*, I'd like to talk about ->
+
 -- [cd-jira.png]
 
 What it is:
 <span weight="bold" size="large" foreground="red">NOT</span>
 
-# First, I want to mention what Continuous Deployment is not about.
+# What Continuous Deployment is NOT.
 #
 # Above all else, it is not something you do *once* and then you're finished
 # and you can move on. Continous Deployment is a process and mind-set you and
@@ -43,15 +69,34 @@ What it is:
 "Release <i>everything</i>
 as soon as possible!"
 
+# Continuous Deployment doesn't mean you release EVERYTHING as soon as it's
+# committed. Nor does it mean you must deploy every single commit.
+#
 # (photo by thomen: <http://www.flickr.com/photos/thomen/364890522/>)
 
 -- [broken_table.jpg]
 
 "Great! No need for a QA team"
 
+# One of the interesting things I've discovered at Lookout and at other
+# organizations, is that Continuous Deployment, and some of the practices
+# involved in it is that it will free up the QA team to *do their jobs*.
+#
+# Good QA engineers are most useful when they're exploring, hunting for bugs.
+# Having QA engineers running through test plans every day of the week is
+# boring, slow and is a good candidate for replacement with automated testing
+# tools
+
 -- [broken_table.jpg]
 
 "Our users will be our testers!"
+
+# Lastly, I don't think Continuous Deployment means you can offload testing to
+# your users.
+#
+# To some extent this will be inevitable, as changes are more rapidly deployed,
+# but I believe you should try everything you can to avoid your users
+# experiencing issues because of bugs you've introduced
 
 --
 
@@ -85,27 +130,21 @@ with
 Continuous Deployment is
 <span weight="heavy" size="large" foreground="green">GOOD</span>
 
---
+-- [lookout_frontdesk.jpg] [right]
 
-<i>in the olden days</i>
+Meanwhile at Lookout
 
---
+-- [svn-branches.png] [top]
 
 Subversion branches for releases
 
-TODO: create background image
-
---- [top]
+--- [subversion-timeline.png] [bottom]
 
 10-18 days per release branch
 
 --
 
 very little automation
-
---
-
-:(
 
 --
 
@@ -128,8 +167,6 @@ of deployments slipped
 
 -- [sad-cat.jpg] [top]
 
-(<i>that sucks</i>)
-
 --
 
 Let's <b>fix</b> this.
@@ -141,20 +178,15 @@ Step One:
 
 -- [robot_assembly.jpg]
 
-<span strikethrough="true">Bitten</span>
 <span weight="bold">Jenkins</span>
 
-# I won't tell you too much about Bitten, but it's not a great tool and we had
-# a number of issues with it:
+# Before we used a tool called Bitten, I won't tell you too much about Bitten,
+# but it's not a great tool and we had a number of issues with it:
 #   * Practically zero developer insight into the test/build process
 #   * All the tests ran on *one* build machine which was hand-crafted by the
 #     Operations team for the task
-#   * We would constantly have issues with Bitten losing track of test
-#     processes
-# We installed Jenkins and started to work on migration "jobs" over to Jenkins.
 #
-# Since our Bitten installation was so backwards, we ended up building a number
-# of jobs "from scratch."
+# We installed Jenkins and started to work on migration "jobs" over to Jenkins.
 
 -- [robot_assembly.jpg]
 
@@ -165,30 +197,30 @@ Step One:
 # after running the tests after every commit with Jenkins, we noticed that we
 # had some technical debt in the test suite
 
--- [robot_assembly.jpg]
-
-"We need build machines!"
-
-# Once we started running more tests more often with Jenkins we found out very
-# quickly that we needed to start to create a build slave infrastructure.
-#
-# For the first few months we relied on a hand-crafted VMWare snapshot, which
-# we used to start up a pool of machines that all looked the same
-
---
+-- [good-tools.jpg]
 
 Step Two
-<b>Die Subversion, Die</b>
+<b>Use better tools</b>
 
---
+# The second important step we took towards continuous deployment was to use
+# *better* tools and processes than we were using
+
+-- [good-tools.jpg]
 
 (<i>I don't like SVN</i>)
 
---
+# I'm not going to rant against Subversion here, if you like it, that's fine.
+# There are ways to accomplish continuous deployment with Subversion. At
+# Lookout however, I viewed it as one of the things standing in our way.
+#
+# So we got rid of Subversion and instead opted for ->
+
+-- [good-tools.jpg]
 
 <b>Git + Gerrit</b>
 
-
+# Git and Gerrit
+#
 # I'm going to assume you know about Git or at least some kind of distributed
 # version control system, so let me tell you about Gerrit.
 
@@ -196,11 +228,19 @@ Step Two
 
 <b>Gerrit</b>
 
-
 # Gerrit is a Git-based code review tool
-# TODO: Fill this in more
+
+-- [codereview-gerrit.png] [top]
+
+code review
+
+-- [collab-diff.png] [top]
+
+collaboration
 
 -- [gerrit-workflow.png] [top]
+
+# TODO: Perhaps this should go after the pre-tested commits bit
 
 <b>Git + Gerrit</b>
 at the same time!
@@ -211,10 +251,9 @@ at the same time!
 # at the same time so developers never learned a Git-based workflow that
 # *didn't* involve Gerrit at its core.
 
---
+-- [gerrit-workflow.png] [top]
 
-Git + Gerrit
-<b>Training the Team</b>
+Training the team
 
 # We scheduled 3 different 1 hour training sessions with various groups of
 # engineers in order to provide a hands-on walk-through of the Git + Gerrit
@@ -223,11 +262,7 @@ Git + Gerrit
 # This included a fully set-up "demo" project to use for experimentation of
 # creating commits, code reviewing them, verifying them with Jenkins and
 # finally merging them into the "master" bracnh
-
---
-
-Document <i>everything</i>
-
+#
 # During the course of these training sessions, we used the feedback and common
 # problems encountered by engineers to fill out a "getting started" wiki page
 # which new hires now use to come up to speed with Git + Gerrit.
@@ -241,13 +276,24 @@ Document <i>everything</i>
 # The whole concept behind "pre-testing" a commit is that only changes which
 # have passed the "tests" will be allowed to be integrated or merged.
 
---
+-- [gerrit-trigger-diagram.png] [fit]
 
-Featuring the:
 <b>Gerrit Trigger plugin</b>
 
+
+# Gerrit Trigger plugin
+
+-- [trigger-feedback.png] [top]
+
+Feedback in Gerrit
+
+-- [gerrit-pretested-workflow.png] [top]
+
+The Cycle
+
 --
 
+# TODO: Make this less out of place
 "We need more builders!"
 
 # When we first started moving things into Jenkins we had 3 slaves that were
