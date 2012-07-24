@@ -48,7 +48,8 @@ Hacking with Ruby
 Let's talk about:
 <b>continuous deployment</b>
 
-# Continuous Deployment.
+# Continuous Deployment, which is also known as "Continuous Delivery". For the
+# context of this talk, I will always refer to it as "Continuous Deployment"
 #
 # Before I talk too much about what it *is*, I'd like to talk about ->
 
@@ -69,7 +70,8 @@ What it is:
 as soon as possible!"
 
 # Continuous Deployment doesn't mean you release EVERYTHING as soon as it's
-# committed. Nor does it mean you must deploy every single commit.
+# committed. It doesn't mean you *MUST* deploy every single commit either.
+#
 #
 # (photo by thomen: <http://www.flickr.com/photos/thomen/364890522/>)
 
@@ -116,66 +118,127 @@ is about
 with
 <b>More Confidence</b>
 
-# Continuous Deployment is about releasing changes faster, and with more
-# confidence in the changes you're preparing the release.
+# faster and with more confidence. Releases shouldn't be scary or stressful, in
+# fact the more boring a deployment is, the better!
 #
-# In order to make that happen, it is important to have *good* procedures for
-# rapid deployment and an excellent feedback loop from production. These two
-# factors, above anything else will enable you to ship code rapidly and
-# maintain quality.
+# In order to make that happen, it is important to have:
+#   * Well-thought out procedures for rapid deployment of changes
+#   * A good feedback loop from production, in order to inform your team about
+#   the current status of the production infrastructure
+#
+# In my opinion, above everything else, these are the two most important
+# factors to succeeding with Continuous Deployment
+#
+# Overall, I think Continuous Deployment is ->
 
 --
 
 Continuous Deployment is
 <span weight="heavy" size="large" foreground="green">GOOD</span>
 
-# Continuous Deployment is GOOD for your organization. Even if you don't end up
-# rapidly deploying your software, the practice of *striving* for continuous
-# deployment will help improve so many other parts of your development process
+# GOOD for your organization. Even if you don't end up rapidly deploying your
+# software, the striving for continuous deployment will help improve so many
+# other parts of your development process
+#
+# So that's Continuous Deployment, and that's all well and good, but let's go
+# back ->
 
 -- [lookout_frontdesk.jpg] [right]
 
 Meanwhile at Lookout
 
+# to Lookout, and talk about "where we were" when we started our journey on the
+# road towards Continuous Deployment
+#
+# "In the olden days" we used ->
+
 -- [svn-branches.png] [top]
 
 Subversion branches for releases
+
+# Subversion branches for all our releases. Whenever we were going to prepare a
+# release, we would create a branch in Subversion and those branches would live  ->
 
 --- [subversion-timeline.png] [bottom]
 
 10-18 days per release branch
 
+# for 10-18 days. That means we would take around two weeks every time we
+# wanted to take the code in trunk, and create a release from it
+#
+# We also performed ->
+
 --
 
 manual code review
 
-# TODO: Fill out a good description of code review pre-git+gerrit
+# Manual code review. The code review process used to be "hey kyle, come look
+# at this real quick before I commit it to trunk."
+#
+# In addition to this loosely enforced manual code review process, we had ->
 
 --
 
 very little automation
 
---
 
-<b>Sadness with Numbers</b>
+# very little automation. We actually had some automated tests running
+# somewhere, but there wasn't a "culture of automation"
+#
+# Being a huge fan of Jenkins and Continuous Deployment, this was very ->
 
 -- [sad-cat.jpg] [top]
+
+# Sad, besides being emotionally frustrating, if we look at the data, it was
+# actually hurting us.
+
+-- [sad-cat.jpg] [top]
+
 <span size="xx-large" weight="bold">36%</span>
 of deployments failed
+
+# This means that 1/3 of the time when we would try to deploy code into
+# production, something would go wrong and we would have to rollback the
+# deploy and find out what went wrong.
+#
+# Unfortunately, since it took us two or more weeks to get the release out, we
+# had on average ->
 
 -- [sad-cat.jpg] [top]
 
 <span size="xx-large" weight="bold">68</span>
 commits per deployment
 
+# 68 commits per deployment, so one or more commits out of 68 could have caused
+# the failure.
+#
+# After a rollback, we'd have to sift through all those commits and find the
+# bug, fix it and then re-deploy.
+#
+# Because of this ->
+
 -- [sad-cat.jpg] [top]
 
 <span size="xx-large" weight="bold">62%</span>
 of deployments slipped
 
+# About 2/3rds of our deployments slipped their planned deployment dates. As an
+# engineering organization, we couldn't really tell the product owner when
+# changes were going to be live for customers with *any* confidence!
+
+-- [sad-cat.jpg]
+
+# So I was pretty frustrated with all of this, and as I talked to more people
+# in the engineering organization, they were frustrated too!
+#
+# SO! ->
+
 --
 
 Let's <b>fix</b> this.
+
+# When we started to come up with a plan to drive towards continuous
+# deployment, the first thing we needed to do was ->
 
 -- [robot_assembly.jpg]
 
@@ -202,12 +265,22 @@ Step One:
 # didn't actually *pass* reliably. Previously this was hidden from us, but
 # after running the tests after every commit with Jenkins, we noticed that we
 # had some technical debt in the test suite
+#
+
 
 -- [robot_assembly.jpg]
 
 Never stop automating.
 
-# TODO: Need to dive into how automation is an on-going commitment
+# Like Continuous Deployment itself, automation is a mind-set. In the past 12
+# months at Lookout we have gone from zero jobs in Jenkins to over 200
+# different jobs performing different tasks.
+#
+# It is important that you constantly recognize manual processes that can and
+# should be automated. Over time these little automations add up into pipelines
+# of tasks that Jenkins can perform entirely on its own
+#
+# Once we had automation in place, we needed to focus on ->
 
 -- [good-tools.jpg]
 
@@ -215,16 +288,18 @@ Step Two
 <b>Better tools,
 processes</b>
 
-# The second important step we took towards continuous deployment was to use
-# *better* tools and processes than we were using
+# Better tools and better processes than what we were using before.
+#
+# This meant evaluating what tools were working, and what wasn't. In the
+# process we migrated away from Pivotal Tracker and dropped Subversion ->
 
 -- [good-tools.jpg]
 
 (<i>I don't like SVN</i>)
 
-# I'm not going to rant against Subversion here, if you like it, that's fine.
+# I'm not going to rant against Subversion, if you like it, that's fine.
 # There are ways to accomplish continuous deployment with Subversion. At
-# Lookout however, I viewed it as one of the things standing in our way.
+# Lookout however, we viewed it as one of the things standing in our way.
 #
 # So we got rid of Subversion and instead opted for ->
 
@@ -232,7 +307,8 @@ processes</b>
 
 <b>Git</b>
 
-# Git can be used a number of different ways, there's the familiar ->
+# Git, if you're not familiar with Git it can be used a number of different
+# ways, there's the familiar ->
 
 -- [git-centralized.png] [fit]
 
@@ -318,27 +394,19 @@ at the same time!
 # Instead of introducing Git as a separate tool to developers, we introduced
 # at the same time so developers never learned a Git-based workflow that
 # *didn't* involve Gerrit at its core.
-
--- [gerrit-workflow.png] [top]
-
-Training the team
-
-# We scheduled 3 different 1 hour training sessions with various groups of
-# engineers in order to provide a hands-on walk-through of the Git + Gerrit
-# workflow
 #
-# This included a fully set-up "demo" project to use for experimentation of
-# creating commits, code reviewing them, verifying them with Jenkins and
-# finally merging them into the "master" bracnh
+# We walked through the different teams, one by one with a fully set-up "demo"
+# project to use for experimentation of creating commits, code reviewing them,
+# verifying them with Jenkins and finally merging them into the "master" branch
 #
-# During the course of these training sessions, we used the feedback and common
-# problems encountered by engineers to fill out a "getting started" wiki page
-# which new hires now use to come up to speed with Git + Gerrit.
-
+# By immediately starting developers with "here's how you do work now", we were
+# able to finish the migration in a matter of a couple weeks instead of the
+# months it's taken me at previous companies.
+#
+# One thing we immediately realized after switching to Git + Gerrit was ->
 
 --
 
-# TODO: Make this less out of place
 "We need more builders!"
 
 # When we first started moving things into Jenkins we had 3 slaves that were
@@ -348,59 +416,83 @@ Training the team
 # In the very early stages of this, we used the same hand-crafted VM base image
 # with VMWare ESX, and then spun up multiple new machines.
 #
-# This process has changed a bit since then, which I'll dig into in a moment
+# If you're going to use a pre-tested commit workflow with an active
+# engineering organization, make sure plan ahead and have plenty of hardware,
+# or virtualized hardware for Jenkins
 
 --
 
 <b>Recap</b>
 
-# TODO: Diagram and cover "the world thus far"
+# Cleaning up and making the development part of the workflow was long overdue,
+# and already was gaining us noticable improvements, even with our slow release
+# process.
+#
+# With every commit getting tested by Jenkins, the stability of our "master"
+# branch had greatly improved, and our deploys became less error prone.
+#
+# Continuous Deployment touches more than just your development team though,
+# it affects your QA team, and your operations team too, so there's still work
+# to be done! The next thing to be done is to ->
 
---
+-- [robot_assembly.jpg]
 
 Step Three
 <b>Automate <i>Everything</i></b>
 
---
+# Automate *EVERYTHING*. There's so much more than writing code involved in
+# getting software into the hands of your customers
+#
+# Take for example ->
 
-Deploying the test environment
+-- [robot_assembly.jpg]
+
+Deploying test environments
 
 
-# Once the deployment of our test environment was managed through Jenkins,
-# we created pipelines with Jenkins, chaining off of a successful
+# Deploying test environments, in the "olden days" QA engineers were
+# responsible for deploying test environments manually.
+#
+# Once the deployment of our test environments was managed through Jenkins,
+# we could create pipelines with Jenkins, chaining off of a successful
 # deployment to the test environment.
 #
-# TODO: Discuss selenium testing/SI testing after QA deploy
+# This opened us up to running ->
 
---
+-- [robot_assembly.jpg]
 
 New kinds of tests!
 
-# TODO: Discuss Jasmine/Selenium tests with Sauce Labs
-
-
--- [release-automation.png] [fit] [top]
-
-Automating <b>deployment</b>
-
-# First automating with `infra_update_faithful2` then moving into the
-# `infra_deploy_qa` territory. Finally automating the actual deployment of
-# production
+# Entirely new kinds of tests! With deployment of a test environment driven
+# from Jenkins, we could create downstream jobs which would spin up VMs with
+# Sauce Labs to run hundreds of Selenium tests in parallel against the test
+# environment, without any intervention from QA or developers.
+#
+# With the automation of development, and then testing squared away, the last
+# big thing to tackle was ->
 
 
 -- [release-automation-to-prod.png] [fit] [top]
 
-Deploying to the
-<i>production</i> environment
+Automating deployment
+<span style="italic" size="xx-small">to the</span>
+<b>production</b>
 
-# TODO: Discuss the use of build promotions to stage, deploy and finally mark
-# the deployment as successful
+# Automating the deployment of the production site.
+# TODO: explain some of the cultural/confidence challenges behind automating
+# prod deployment with Jenkins
 
+-- [robot_assembly.jpg]
+
+# With Jenkins doing all of these things, you will likely have a similar
+# realization to us, in that you need ->
 
 -- [android-army.jpg]
 
 Step Four
-<b>More Robots</b>
+<b>More Robots!</b>
+
+# More robots
 
 -- [android-army.jpg]
 
@@ -430,36 +522,42 @@ Puppet
 
 --
 
-* Haven't automated the rollback of production
-* Not nearly enough stages/production clusters to run Selenium tests per-commit
-* Not enough real-time feedback from production
-* No production acceptance testing
-* Tests take a LONG time
-* Still only doing a single daily deployment, facing the same issues we did before with 2 week deployment, but on a smaller scale
+No automated rollback
 
 --
 
-<b>Happiness with Numbers</b>
+No production acceptance testing
 
 --
+
+Tests are <b>slow</b>
+
+--
+
+# Sure we have problems, but with:
+#   * Introducing a lot of Automation with Jenkins
+#   * Using Gerrit and Jenkins for code review and pre-testing all commits
+#   before the get into the master branch
+#   * And automating the pipeline from "merge to master" all the way through
+#   to "deploy to production"
+#
+# We've managed to change entire engineering organization such that ->
+
+-- [happy-cat.jpg] [bottom]
 
 <span size="xx-large" weight="bold">2%</span>
 of deployments failed
 
---
+-- [happy-cat.jpg] [bottom]
 
 <span size="xx-large" weight="bold">14</span>
 commits per deployment
 
---
+-- [happy-cat.jpg] [bottom]
 
 <span size="xx-large" weight="bold">3%</span>
 of deployments slipped
 
--- [happy-cat.jpg] [top]
+-- [happy-cat.jpg] [bottom]
 
-(<i>that <b>rocks!</b></i>)
-
---
-
-Questions?
+<b>Questions?</b>
