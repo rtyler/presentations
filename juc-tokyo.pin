@@ -243,7 +243,7 @@ Let's <b>fix</b> this.
 -- [robot_assembly.jpg]
 
 Step One:
-<b>Automate</b>
+<b>Automate Development</b>
 
 -- [robot_assembly.jpg]
 
@@ -382,6 +382,7 @@ Feedback in Gerrit
 -- [gerrit-pretested-workflow.png] [top]
 
 The Cycle
+
 -- [gerrit-workflow.png] [top]
 
 # TODO: Perhaps this should go after the pre-tested commits bit
@@ -438,7 +439,7 @@ at the same time!
 -- [robot_assembly.jpg]
 
 Step Three
-<b>Automate <i>Everything</i></b>
+<b>Automate Everything Else</b>
 
 # Automate *EVERYTHING*. There's so much more than writing code involved in
 # getting software into the hands of your customers
@@ -461,7 +462,7 @@ Deploying test environments
 
 -- [robot_assembly.jpg]
 
-New kinds of tests!
+New kinds of tests
 
 # Entirely new kinds of tests! With deployment of a test environment driven
 # from Jenkins, we could create downstream jobs which would spin up VMs with
@@ -475,12 +476,19 @@ New kinds of tests!
 -- [release-automation-to-prod.png] [fit] [top]
 
 Automating deployment
-<span style="italic" size="xx-small">to the</span>
+<span style="italic" size="xx-small">to</span>
 <b>production</b>
 
-# Automating the deployment of the production site.
-# TODO: explain some of the cultural/confidence challenges behind automating
-# prod deployment with Jenkins
+# Automating the deployment of the production site is and was the hardest part
+# of the entire workflow to accomplish. To automate a production deployment you
+# need to be very confident in what code is going out and the sanity of the
+# processes leading up to the production deployment.
+#
+# Currently at Lookout production deployments are "manually automated" that
+# means we have all the steps *right up* to deployment automated, and the
+# deployment itself automated, but there is currently no process in place for
+# changes to automatically flow through the entire system from a developers
+# workstation, through Gerrit, and ultimately out to production
 
 -- [robot_assembly.jpg]
 
@@ -509,8 +517,15 @@ jclouds plugin
 <span style="italic" size="xx-small">with</span>
 Puppet
 
+# As the number of slaves we operate grows, we have found the need to manage
+# the slaves all at once. Currently we use a masterless Puppet set up for all
+# of our slave images, they all have a cron job that checks the Git repository
+# for new Puppet manifests every hour, and will apply any outstanding updates.
+#
+# This allows us to bring new system dependencies, such as ImageMagick or
+# libxml2, onto the slave machines without needing to log into them manually or
+# re-image the whole cluster of VMs
 
-# TODO: discuss Puppetizing the slave machines
 --
 
 <b>TODO</b>
@@ -524,13 +539,22 @@ Puppet
 
 No automated rollback
 
+# Currently there is no automated system for rolling back changes, if we notice
+# any issues in production then must manually rollback the deployment.
+
 --
 
 No production acceptance testing
 
+# TODO: Explain that we have to rely on error logging and Graphite and
+# manual acceptance testing to ensure that we didn't break production
+
 --
 
 Tests are <b>slow</b>
+
+# TODO: Mention our workaround for slow tests, parallelizing with the Gerrit
+# Trigger plugin
 
 --
 
@@ -561,3 +585,7 @@ of deployments slipped
 -- [happy-cat.jpg] [bottom]
 
 <b>Questions?</b>
+
+--
+
+<b>Thank you</b>
