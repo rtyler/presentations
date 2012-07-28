@@ -383,6 +383,12 @@ Feedback in Gerrit
 
 The Cycle
 
+--
+
+Demo!
+
+-- [test-fail-then-succeed.mkv]
+
 -- [gerrit-workflow.png] [top]
 
 # TODO: Perhaps this should go after the pre-tested commits bit
