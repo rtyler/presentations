@@ -21,6 +21,17 @@ tyler@linux.com</span>
 # "mid-flight" for Continuous Deployment and at the same time, I'm going to
 # tell you how you can too with Jenkins and Gerrit
 
+--
+
+@jenkinsci
+
+--
+
+Jenkins Infrastructure
+<i>with</i>
+<b>Puppet</b>
+
+
 -- [lookout_frontdesk.jpg] [right]
 
 I work for Lookout
