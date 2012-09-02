@@ -1,0 +1,18 @@
+#!/usr/bin/env pinpoint
+
+[fill]
+[white]
+[center]
+[text-align=center]
+
+--
+
+<span size="large" weight="heavy">Better late than never</span>
+Integrating Selenium after the fact
+
+<span size="xx-small">R. Tyler Croy
+tyler@linux.com</span>
+
+--
+
+--
