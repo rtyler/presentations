@@ -1,11 +1,13 @@
 #!/usr/bin/env pinpoint
 
 [fill]
-[white]
+[black]
 [center]
 [text-align=center]
+[font=Sans 70px]
+[running-late-overlay.png]
 
---
+-- [running-late.png]
 
 <span size="large" weight="heavy">Better late than never</span>
 Integrating Selenium after the fact
@@ -13,6 +15,373 @@ Integrating Selenium after the fact
 <span size="xx-small">R. Tyler Croy
 tyler@linux.com</span>
 
---
+# Hello and thanks for coming. I'm R. Tyler Croy and I'm going to talk a bit
+# this evening about the integrating Selenium and browser testing after you've
+# already built out a mature web application
+#
+# Before I get to the good stuff, first let me explain who I am and why I'm
+# qualified :)
+
+-- [lookout_frontdesk.jpg] [right]
+
+<b>I work here</b>
+
+-- [terminal_ruby.png]
+
+<b>Hacking with Ruby</b>
 
 --
+
+I am not in QA
+
+--
+
+(<i>so why do I care?</i>)
+
+--
+
+Quality is <b>important</b>
+
+--
+
+Reliability
+
+--
+
+Speed
+
+--
+
+<b>The Business</b>
+
+--
+
+
+--
+
+<b>Challenges</b>
+
+-- [white]
+
+Browser test suite
+
+-- [white]
+
+Browser testing infrastructure
+
+# This is a picture of our browser testing infrastructure when we started
+#
+# We had absolutely nothing in place, this means we had no machines to run browsers, our build machines were all simple Linux VMs
+#
+# Fortunately we did have some amount of automation hooks exposed for creating
+# accounts on a staging server and manipulating/scaffolding up "state" on a
+# server
+
+--
+
+Unit Test-Driven Team
+
+# The team, was very familiar with using TDD but not so much familiar with
+# test-first driven development. Even so, the tests that were typically being
+# written were almost *entirely* unit tests, with a thin veneer of
+# integration/high-level tests being written
+
+--
+
+Lack of experience
+
+# We also had a pretty major lack of experience in browser or higher-level
+# automated acceptance testing throughout the company
+
+--
+
+Directionless
+
+# Because of this lack of experience we had a lot of uncertainty and doubt with
+# regards to the right direction to start to build a test suite and testing
+# infrastructure for.
+#
+# I personally had some experience from working with @admc at Slide on this
+# very kind of project, which was ultimately an abyssmal failure. We used
+# Windmill and created very brittle tests, only written by QA engineers,
+# tied the tests very close to the page driver itself and ended up writing very
+# "unit-test-style" methods/test cases such as "def
+# test_page_does_display_alert_when_clicking_thing" with tens of lines of
+# browser calls in them
+
+--
+
+# So that's where we started from, it was scary.
+
+--
+
+
+-- [good-idea.jpg]
+
+# Allow local testing to be run
+
+-- [bad-idea.jpg]
+
+# Require a local server set up to run the tests. This makes parallelism very
+# difficult
+
+
+-- [good-idea.jpg]
+
+# Use tooling better suited for acceptance or integration testing, such as
+# Cucumber, JBehave, etc
+
+-- [bad-idea.jpg]
+
+# Use the exact same tool that you write your unit test code in
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+class PurchaseTest < Test::Unit::TestCase
+  include SeleniumHelper
+
+  def test_valid_credit_card_purchase
+    # ...
+  end
+
+  def test_fat_fingered_credit_card_information
+    user = create_user
+    driver.nagivate.to('/purchase')
+    cc_elem = driver.find_element('input#credit_card')
+    cc_elem.send_keys(8008)
+    button = driver.find_element('input#purchase')
+    button.submit
+  end
+
+  def test_d2p_for_already_existing_account
+    # ...
+  end
+end
+
+# The tool isn't designed for the job, it also encourages developers and
+# testers to write terrible tests because they're not breaking out of the scope
+# of a unit test and thinking about things from the "outside"
+
+-- [bad-idea.jpg]
+
+# Use Selenese
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>login</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">login</td></tr>
+</thead><tbody>
+<tr>
+       <td>open</td>
+       <td>/</td>
+       <td></td>
+</tr>
+<tr>
+       <td>clickAndWait</td>
+       <td>link=LOGIN</td>
+       <td></td>
+</tr>
+<tr>
+       <td>type</td>
+       <td>id=user_email</td>
+       <td>test@example.com</td>
+</tr>
+<tr>
+       <td>type</td>
+       <td>id=user_password</td>
+       <td>testthis</td>
+</tr>
+<tr>
+       <td>clickAndWait</td>
+       <td>name=login</td>
+       <td></td>
+</tr>
+<tr>
+       <td>clickAndWait</td>
+       <td>link=Logout</td>
+       <td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
+
+-- [good-idea.jpg]
+
+# Using Cucumber is a great idea, in my opinion, for creating a focus on
+# Acceptance Test Driven development. The structure of it, and the separation
+# from the code itself can really help developers think and communicate in the
+# abstract for a given task or feature.
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+
+Scenario: Free users should have locate/scream capability
+
+  Users that are either in trial or in the free account state
+  should always be able to locate and scream from the non-mobile
+  version of the web site
+
+  Given I am a logged in free user
+   When I visit the "Missing Device" page
+   Then I should be able to locate my phone
+    And I should be able to scream my phone
+
+-- [bad-idea.jpg]
+
+# Bad Idea: Using Cucumber *incorrectly* is almost as bad as not using Cucumber
+# at all.
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+Scenario: Free users can locate and scream
+  Given I am a free user
+   When I visit the login page
+    And I enter my password
+    And I enter my email
+   When I click on the "Login" button
+   Then I click on the "Missing Device" link
+   Then I should see the "Locate" link
+    And I should see the "Scream" link
+
+-- [good-idea.jpg]
+
+# Build an automation library or layer that the Cucumber step definitions can
+# talk to.
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+Given /^I am a logged in (free|pro) user$/ do |type|
+  # Call our automation API
+  user = create_user(type.to_sym)
+
+  # Visit our Login page
+  visit url_for(:controller => 'user', :action => 'login')
+
+  # Log in!
+  fill_in "login[user]", :with => user.email
+  fill_in "login[password]", :with => user.password
+  click_on 'Log in'
+end
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+Given /^I am a logged in (free|pro) user$/ do |type|
+  # Call our automation API
+  user = create_user(type.to_sym)
+
+  # Call our automation API to login
+  login_with(user)
+end
+
+-- [good-idea.jpg]
+
+# Use Capybara
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+  # Visit our Login page
+  visit url_for(:controller => 'user', :action => 'login')
+
+  # Log in!
+  fill_in "login[user]", :with => user.email
+  fill_in "login[password]", :with => user.password
+  click_on 'Log in'
+
+-- [bad-idea.jpg]
+
+# Use the Selenium WebDriver API directly
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+  @driver.navigate.to(url_for(:controller => 'user', :action => 'login))
+
+  email_field = @driver.find_element(:name => 'login[user]')
+  # Make sure we found it!
+  email_field.should_not be_nil
+  email_field.send_keys(user.email)
+
+  pass_field = @driver.find_element(:name => 'login[password'])
+  pass_field.should_not be_nil
+  pass_field.send_keys(user.password)
+
+  button = @driver.find_element(:name => 'login')
+  button.should_not be_nil
+  button.submit
+
+-- [bad-idea.jpg]
+
+# Re-use step definitions within other step definitions
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+Given /^I am a logged in free user$/ do
+  Given %{I am a free user}
+  Given %{I am logged in to the site}
+end
+
+-- [good-idea.jpg]
+
+# Use hosted or managed services such as Sauce Labs to get started with testing
+# multiple browser versions very quickly
+
+-- [bad-idea.jpg]
+
+
+# Spent time and money setting up a local selenium grid or other testing
+# infrastructure before getting the company bought into browser testing
+
+-- [good-idea.jpg]
+
+# Set up multiple staging or testing environments, ideally those in some sort
+# of elastic cloud such as EC2, OpenStack, etc
+
+-- [bad-idea.jpg]
+
+# Run all automated tests against a single host.
+
+-- [good-idea.jpg]
+
+# Start writing scenarios, or outlining acceptance tests at the top of the
+# "product funnel" to make sure that the team can agree/understand what's being
+# built and why.
+
+-- [bad-idea.jpg]
+
+# Save test-writing for the absolute last step before deployment, putting a lot
+# of pressure on the QA team but also incentivizing taking shortcuts and not
+# writing tests at all!
+#
+# Tests written as an "after thought" are bound to be more hacky and can not
+# help weed out product or UX issues early enough to stop bugs before they
+# happen
+
+-- [good-idea.jpg]
+
+# Write unit-tests for your JavaScript code using Jasmine, QUnit, etc to ensure
+# that the front-end application works well.
+
+-- [bad-idea.jpg]
+
+# Rely on Selenium to test/validate all potential behaviors of your front-end
+# code. It's much more time-efficient to write unit tests for JS in Jasmine
+# than running the appropriate Selenium test cases to exercise varying
+# invocations of JavaScript functions
+
+--
+
+<b>Questions?</b>
+
+--
+
+Thanks
