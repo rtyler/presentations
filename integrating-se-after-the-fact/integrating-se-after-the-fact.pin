@@ -44,18 +44,7 @@ Quality is <b>important</b>
 
 --
 
-Reliability
-
---
-
-Speed
-
---
-
-<b>The Business</b>
-
---
-
+# Talk about the "state of Lookout" when this project started around a year ago
 
 --
 
@@ -115,21 +104,38 @@ Directionless
 
 --
 
-
--- [good-idea.jpg]
-
-# Allow local testing to be run
+# I'm going to try to avoid being overly prescriptive, I'm certainly
+# opinionated but I just want to make sure I focus more on what has and has not
+# worked for me at Lookout and a bit at the failed project at Slide
 
 -- [bad-idea.jpg]
 
-# Require a local server set up to run the tests. This makes parallelism very
-# difficult
+# QA should not own selenium testing
+
+-- [good-idea.jpg]
+
+# Selenium testing should be moved as much into the app developer workflow as
+# possible.
+
+
+
+-- [bad-idea.jpg]
+
+# Binding together the starting of a local server running the application, with
+# the running of the tests is a *bad idea*.
+#
+# This will really hurt your ability to run many tests in parallel, but also
+# can increase overhead for every single test case, especially as tasks such as
+# rebuilding the DB, or factorying up data grows.
 
 
 -- [good-idea.jpg]
 
-# Use tooling better suited for acceptance or integration testing, such as
-# Cucumber, JBehave, etc
+# It is a *good idea* to make sure running against a local test server works
+# seamlessly. In fact, ensuring that by default tests run against a local
+# server is fine for development, but for CI and full test runs, it's important
+# that the tests are capable of hitting remote staging or test environments.
+
 
 -- [bad-idea.jpg]
 
@@ -164,7 +170,14 @@ end
 
 -- [bad-idea.jpg]
 
-# Use Selenese
+# Use Selenese. Does everybody here know what Selenese is? It's an
+# "interesting" langauge that the Selenium IDE records into, that is totally
+# brittle, unmaintainable and write-once read never for your development and QE
+# team
+#
+# Here's one of the shortest examples I could find in our git log of some
+# terrible Selenese that was created long ago
+
 
 -- [font=monospace 50px] [text-align=left] [left]
 
@@ -218,6 +231,32 @@ end
 
 -- [good-idea.jpg]
 
+# Use tooling better suited for acceptance or integration testing, such as
+# Cucumber, JBehave, etc
+
+
+-- [bad-idea.jpg]
+
+# Bad Idea: Using Cucumber *incorrectly* is almost as bad as not using Cucumber
+# at all.
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+Scenario: Free users can locate and scream
+  Given I am a free user
+   When I visit the login page
+    And I enter my password
+    And I enter my email
+   When I click on the "Login" button
+   Then I click on the "Missing Device" link
+   Then I should see the "Locate" link
+    And I should see the "Scream" link
+
+# There's literally no benefit to using Cucumber if this is how you're writing
+# scenarios. This just becomes another layer of useless indirection
+
+-- [good-idea.jpg]
+
 # Using Cucumber is a great idea, in my opinion, for creating a focus on
 # Acceptance Test Driven development. The structure of it, and the separation
 # from the code itself can really help developers think and communicate in the
@@ -239,20 +278,38 @@ Scenario: Free users should have locate/scream capability
 
 -- [bad-idea.jpg]
 
-# Bad Idea: Using Cucumber *incorrectly* is almost as bad as not using Cucumber
-# at all.
+# Use the Selenium WebDriver API directly
 
 -- [font=monospace 70px] [text-align=left] [left]
 
-Scenario: Free users can locate and scream
-  Given I am a free user
-   When I visit the login page
-    And I enter my password
-    And I enter my email
-   When I click on the "Login" button
-   Then I click on the "Missing Device" link
-   Then I should see the "Locate" link
-    And I should see the "Scream" link
+  @driver.navigate.to(url_for(:controller => 'user', :action => 'login))
+
+  email_field = @driver.find_element(:name => 'login[user]')
+  # Make sure we found it!
+  email_field.should_not be_nil
+  email_field.send_keys(user.email)
+
+  pass_field = @driver.find_element(:name => 'login[password'])
+  pass_field.should_not be_nil
+  pass_field.send_keys(user.password)
+
+  button = @driver.find_element(:name => 'login')
+  button.should_not be_nil
+  button.submit
+
+-- [good-idea.jpg]
+
+# Use Capybara, if you're a Ruby developer
+
+-- [font=monospace 70px] [text-align=left] [left]
+
+  # Visit our Login page
+  visit url_for(:controller => 'user', :action => 'login')
+
+  # Log in!
+  fill_in "login[user]", :with => user.email
+  fill_in "login[password]", :with => user.password
+  click_on 'Log in'
 
 -- [good-idea.jpg]
 
@@ -284,40 +341,6 @@ Given /^I am a logged in (free|pro) user$/ do |type|
   login_with(user)
 end
 
--- [good-idea.jpg]
-
-# Use Capybara
-
--- [font=monospace 70px] [text-align=left] [left]
-
-  # Visit our Login page
-  visit url_for(:controller => 'user', :action => 'login')
-
-  # Log in!
-  fill_in "login[user]", :with => user.email
-  fill_in "login[password]", :with => user.password
-  click_on 'Log in'
-
--- [bad-idea.jpg]
-
-# Use the Selenium WebDriver API directly
-
--- [font=monospace 70px] [text-align=left] [left]
-
-  @driver.navigate.to(url_for(:controller => 'user', :action => 'login))
-
-  email_field = @driver.find_element(:name => 'login[user]')
-  # Make sure we found it!
-  email_field.should_not be_nil
-  email_field.send_keys(user.email)
-
-  pass_field = @driver.find_element(:name => 'login[password'])
-  pass_field.should_not be_nil
-  pass_field.send_keys(user.password)
-
-  button = @driver.find_element(:name => 'login')
-  button.should_not be_nil
-  button.submit
 
 -- [bad-idea.jpg]
 
@@ -330,31 +353,29 @@ Given /^I am a logged in free user$/ do
   Given %{I am logged in to the site}
 end
 
+-- [bad-idea.jpg]
+
+# Spent time and money setting up a local selenium grid or other testing
+# infrastructure before getting the company bought into browser testing
+
+
 -- [good-idea.jpg]
 
 # Use hosted or managed services such as Sauce Labs to get started with testing
 # multiple browser versions very quickly
 
+
+
 -- [bad-idea.jpg]
 
+# Run all automated tests against a single host.
 
-# Spent time and money setting up a local selenium grid or other testing
-# infrastructure before getting the company bought into browser testing
 
 -- [good-idea.jpg]
 
 # Set up multiple staging or testing environments, ideally those in some sort
 # of elastic cloud such as EC2, OpenStack, etc
 
--- [bad-idea.jpg]
-
-# Run all automated tests against a single host.
-
--- [good-idea.jpg]
-
-# Start writing scenarios, or outlining acceptance tests at the top of the
-# "product funnel" to make sure that the team can agree/understand what's being
-# built and why.
 
 -- [bad-idea.jpg]
 
@@ -368,8 +389,9 @@ end
 
 -- [good-idea.jpg]
 
-# Write unit-tests for your JavaScript code using Jasmine, QUnit, etc to ensure
-# that the front-end application works well.
+# Start writing scenarios, or outlining acceptance tests at the top of the
+# "product funnel" to make sure that the team can agree/understand what's being
+# built and why.
 
 -- [bad-idea.jpg]
 
@@ -377,6 +399,22 @@ end
 # code. It's much more time-efficient to write unit tests for JS in Jasmine
 # than running the appropriate Selenium test cases to exercise varying
 # invocations of JavaScript functions
+
+-- [good-idea.jpg]
+
+# Write unit-tests for your JavaScript code using Jasmine, QUnit, etc to ensure
+# that the front-end application works well.
+
+--
+
+# The Selenium work at Lookout is far from perfect, and far from complete. We
+# rapidly back-filled our test coverage which was a mixed blessing. We got a
+# lot of coverage fast, but it varies in quality of test from feature to
+# feature and in some cases browser to browser.
+#
+# Where we have had the best results in our tests have been in incorporating
+# them as much as possible with the actual development of the product feature
+# itself.
 
 --
 
