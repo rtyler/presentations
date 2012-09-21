@@ -30,6 +30,13 @@ tyler@linux.com</span>
 
 <b>Hacking with Ruby</b>
 
+# Most of my work is in Ruby, while Lookout's flagship product is an
+# application for the Android platform, the vast majority of our code is all
+# server-side Ruby code.
+#
+# For my team specifically, we're responsible for Lookout's web presence, which
+# is a lot of Ruby on Rails (for better or worst)
+
 --
 
 I am not in QA
@@ -41,6 +48,16 @@ I am not in QA
 --
 
 Quality is <b>important</b>
+
+# Quality is important for a lot of reasons, in Lookout's case a fundamental
+# part of user trust is reliability in my opinion.
+#
+# If a user loses their phone, visits mylookout.com to try to find the phone
+# and our site breaks, they're going to be pretty pissed.
+#
+# Automating the quality of the app is also pretty important IMHO to ensuring
+# that we as a team can move forward and focus on building new things instead
+# of trying to make sure that all the old stuff doesn't fall over
 
 --
 
@@ -70,10 +87,13 @@ Browser testing infrastructure
 
 Unit Test-Driven Team
 
-# The team, was very familiar with using TDD but not so much familiar with
-# test-first driven development. Even so, the tests that were typically being
+# The team, was very familiar with using TDD. Not so much with ATDD. 
+# Even so, the tests that were typically being
 # written were almost *entirely* unit tests, with a thin veneer of
 # integration/high-level tests being written
+#
+# Need to mention the difference between unit tests (for developers)
+# and acceptance testing (from the user perspective
 
 --
 
@@ -254,6 +274,9 @@ Scenario: Free users can locate and scream
 
 # There's literally no benefit to using Cucumber if this is how you're writing
 # scenarios. This just becomes another layer of useless indirection
+#
+# Mention the issues with internationalization
+
 
 -- [good-idea.jpg]
 
@@ -404,6 +427,16 @@ end
 
 # Write unit-tests for your JavaScript code using Jasmine, QUnit, etc to ensure
 # that the front-end application works well.
+
+--
+
+-- [good-idea.jpg]
+
+# Integrating Selenium testing with CI is a great idea, and very important to
+# ensuring the success of the browser testing project and adoption at the
+# company.
+#
+# Talk a bit about the Jenkins set up for Selenium at Lookout
 
 --
 
