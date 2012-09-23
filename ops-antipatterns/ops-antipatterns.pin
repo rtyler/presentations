@@ -109,10 +109,39 @@ This talk is all about <b>failure</b>
 
 --
 
+Team Never Fail
+
+# "This component can never go down; we have to use HA (or some other
+# inordinately complex failover solution)" Vendors are very motivated to sell HA
+# solutions because   +they're lucrative and geeks are excited to buy them
+# because of the gee-whiz factor and fear about losing their jobs if the site
+# does go down. The many possible failure +modes of a complex component means,
+# though, that it's really impossible to test all of the ways something could
+# fail. And the significant complexity of HA software    +means it's almost
+# certainly got bugs itself.
+#
+# Better to expect failure and be able to deal with
+# it.
+
+--
+
 <span size="xx-large" weight="heavy">Everything Will Fail</span>
 
 # The sooner you are accustomed to everything failing, the sooner you can start
 # planning for fault tolerance and disaster recovery.
+
+--
+
+Disaster Recovery
+(failure in the cloud)
+
+# One thing I've noticed many organizations doing is using multiple AWS regions for
+# disaster recovery or fail over. Yet somehow whenever US East 1 goes offline,
+# everybody dies.
+#
+# Preparing for disaster recovery and fault tolerance is a noble goal, but most
+# people opt to pay the price of replicating between regions, and then never
+# actually exercise or automating the fail-over.
 #
 # While we're on the topic of failure, let's talk about alerting really quick
 
@@ -166,20 +195,83 @@ we'll be more stable that way"
 #
 # You're better off if things are updated regularly. Even better if you regularly
 # rebuild them.
+
 --
+
+Wahoo!
+
+# One of my favorite examples of this comes from a colleague who has worked at
+# a giant tech company, we'll call "Wahoo!"
+#
+# The engineers at Wahoo! were very conservative about upgrades, so much so
+# that machines were running positively ancient versions of Debian with even
+# more ancient versions of the Linux kernel.
+#
+# The kernel was so old that a leap year fix wasn't back-ported, and when the
+# leap-year finally occurred, hoardes of machines dead-locked.
+
+-- [wat-llama.jpg] [fit]
+
+--------------------------------------------------------------------------------
 
 <b>Silos: Build'em Up</b>
 
-#` Slide:
-# - Pride/Developer Workstations
-# - No developer access to production
-# Lookout:
-# - Only Ops can deploy
-# - Ops builds a platform for Ops, lolz, no service to Dev
-# BT
-# - devs/ops ticket ping-pong
+# With the coining of the term "devops", this has become a hot topic in a lot
+# of engineering organizations.
+#
+# Remember that "WAT" I talked about earlier, with JIRAs being required to get
+# any work done within an organization. That's a real story. A colleague of
+# mine worked in an organization so dysfunctional, and so siloed, that all work
+# items had to be placed through JIRA. Need a machine racked? JIRA! Need
+# somebody to check the state of machines X, Y and Z? JIRA! Need anything from
+# anybody in any other team at any time? JIRA!
+#
+# Since people are fallable, busy and frantic creatures, some of these tickets
+# wouldn't get addressed in a timely fashion. In order to work effectively,
+# what my colleague ended up doing was filing multiple tickets at a time,
+# essentially asking for the same work to be done, and hedging his bets
+
+-- [wat-baby.png] [fit]
+
+# wat
 
 --
+
+Protect the environment
+
+# Another incantation of silos that I've seen and also been a part of, is where
+# Operations owns and is responsible for the environment in which the
+# application runs.
+#
+# This means no developer access to produciton, but in the past it has also
+# meant that the only way to get real testing or development done has been on
+# Operations managed and sanctioned workstations
+
+--
+
+# A colleague of mine became so frustrated with Operations "owning" the
+# environment, and begging for changes to be made, when it came time for him to
+# deploy a new product, he circumvented the Operations team entirely.
+#
+# Using a service like Heroku, his team rapidly deployed and updated the
+# applicaiton in this non-Ops-managed environment for over a year before the
+# Ops team found out. Becoming such an impediment to change resulted in the dev
+# team routing around the Ops team, and boy were people pissed off when they
+# found out about it.
+
+--
+
+Ops for Ops sake
+
+# the other major problem with silo-ization of this kind is that the Ops team
+# can lose focus on the actual business objectives and do work for "Ops' sake".
+#
+# - Ops builds a platform for Ops, lolz, no service to Dev
+#
+# The developer team is not an Operations customer; aka Operations for
+# Operations sake (per patrick and jay's points)
+
+--------------------------------------------------------------------------------
 
 <b>Not Invented Here</b>
 
@@ -193,29 +285,94 @@ we'll be more stable that way"
 
 --
 
-Examples
+# What if I told you we built a configuration management tool? Understandably,
+# you would say
+
+-- [wat-sheeps.jpg]
+
+# wat
 
 --
 
-Google - Everything
+# NIH is problematic because sometimes it will happen gradually, and other tims
+# very overtly. Naturally, if I told you we re-invented Puppet, you'd be taken
+# aback. But I've seen plenty of organizations that grow from a tool like
+# Fabric or Capistraon, and slowly start to add more Puppet-like functionality
+# into them.
+#
+# Tasks to create files, add keys, ensure symlinks are in place. Slowly but
+# surely, as more and more demands are made, the capistrano-config management
+# system grows until you effectively have re-implemented Puppet, and boy don't
+# you feel silly.
 
-Lookout - Maestro
+--
 
-Sauce Labs - Puppet
+# Have you heard of Puppet's Razor tool for bare metal provisioning? How about
+# LinMin? There's quite a few bare metal provisioning tools out there, and
+# perhaps they work fine for your organization, but what if they don't?
+#
+# Do you patch the open source tool? Fork it internally? Or build your own tool
+# based on your own needs?
 
-Slide - Apt/Puppet/etc
+--
 
-Groupon - Puppet (w/ encap)
+# How about inventory? There's a few different inventory tools out there, but
+# why not build your own for your own needs?
+#
 
+--
+
+# While your custom tooling is getting more and more complex, the packaging of
+# your custom stuff is getting to be a pain too. Apt and dpkg just can't cut it
+# anymore, so what do you do?
+#
+# Build your own package management system why not!
+
+-- [wat-dolphin.jpg] [fit]
+
+# wat
+
+--
+
+The Line
+
+# Where do you draw the line with NIH? At one end of the extreme you can just
+# purchase everything that's not part of your core business, but is that cost
+# effective?
+#
+# Alternatively, you can build everything to meet your own needs, but then your
+# organization is supporting a bunch of shit that doesn't directly contribute
+# to the goals of what your company is doing.
+
+
+--------------------------------------------------------------------------------
+
+<b>Technical Fuck-ups</b>
 
 --
 
 
-<b>Technical Fuckups</b>
+Netboot all the things!
+
+# "Let's have all the machines netboot off shared storage so they're all running
+# the same OS" This is great from an audit standpoint. You also don't have to
+# worry about  +disk failures in individual machines. But it leads to complexity
+# (many things have to be mounted read-only) and, of course, if your shared
+# storage fails it takes out a +big chunk of machines. Better to have local OS,
+# automated provisioning, and deal with machine failures caused by disk faults.
+
+
+--
+
+Backups and Recovery
 
 --
 
 
+Log all the things
 
+Analyze none of the things
+
+# ("just in case" data retention)
 
 --
