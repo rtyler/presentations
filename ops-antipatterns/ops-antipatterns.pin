@@ -1,0 +1,221 @@
+#!/usr/bin/env pinpoint
+
+[fill]
+[black]
+[top]
+[text-align=center]
+[oreilly_inverted.png]
+
+--
+
+<span size="large" weight="heavy">We'll do it live</span>
+Operations Anti-Patterns
+
+<span size="xx-small">R. Tyler Croy</span>
+
+# Hello everybody, I'm R Tyler Croy, and I have done unspeakable things.
+#
+# I'm going to talk to you today about Operations Anti-Patterns, really, this
+# is an exercise in Operations Shadenfreude, that will hopefully help us all
+# suck less in the future.
+#
+# Before I start, most of you don't know me, so let me introduce myself
+
+-- [lookout_frontdesk.jpg] [right]
+
+I work here
+
+# I work at Lookout Mobile Security, as one of those evil app developers.
+
+--
+
+How am I at all qualified to give this talk?
+
+# Totes DevOps at Slide on the server team
+# One-man operations team at Apture
+# Totes DevOps at Lookout on the P&I team
+# Totes OpsOps for Jenkins
+
+--[top]
+
+This talk is all about <b>failure</b>
+
+# There was a lightning talk that spread around the internet earlier this year
+# by Gary Bernhardt from CodeMash 2012, talking about some of the WAT worthy
+# things in JavaScript and Ruby. The talk by itself is fantastic, and I
+# recommend watching it, but the most longlasting effect it has had on me has
+# been the way Gary says "WAT".
+#
+# It's distinct like a quacking duck, but so perfectly encapsulates the
+# emotions in so few letters.
+#
+# If you were to come in to work on Monday, and the CTO had proclaimed that all
+# internal work items must be communicated through JIRA. Jabber was to be
+# turned off, and if the developers needed anything from ops, and vice versa,
+# they would need to file a JIRA; understandably, you would say
+
+-- [wat-toad.jpg] [fit]
+
+# Wat
+--
+
+<b>Failure is not an option</b>
+
+# Failure, like security, isn't a boolean switch. The way to ensure effective
+# operational security is to enact layers of security that together help ensure
+# an overall secure state.
+
+--
+
+<b>duh</b>
+
+# Operations and failure is no different
+
+--
+
+# Single points of failure are typically not designed into the system from the
+# beginning, they tend to evolve over time into single points of failure.
+#
+# Let's take a system I worked on as an example. Before I joined the
+# organization, they had a simple need to perform some minor tasks
+# asynchronously. Low-cost, infrequent asynchonous tasks. The person in charge
+# at the time decided to use a MySQL table as the work queue
+
+-- [wat-little-girl.jpg]
+
+# that's the first "wat"
+
+--
+
+# More often than not, single points of failure evolve over time. In this case,
+# we started to put more traffic on this MySQL queue, churn on the DB increased
+# and we decided "hey, maybe using the database as a queue is a stupid idea"
+# and switched to Kestrel.
+#
+# Our single instance of Kestrel at the time worked fine, but we kept putting
+# more and more data into it.
+#
+# After a few weeks of increased traffic and putting more and more data into
+# this single instance, we had a software bug kill off a mass of workers late
+# one night; the queues backed up, rtyler's were paged, the disk filled up and
+# the site went offline.
+
+
+-- [sad-kitty.jpg] [fit]
+
+# We had built up this single point of failure, never tested failure modes, and
+# ensured that the application MUST ABSOLUTELY have Kestrel online at all times
+# in order to work properly.
+
+--
+
+<span size="xx-large" weight="heavy">Everything Will Fail</span>
+
+# The sooner you are accustomed to everything failing, the sooner you can start
+# planning for fault tolerance and disaster recovery.
+#
+# While we're on the topic of failure, let's talk about alerting really quick
+
+-- [nagios-failure.png]
+
+<b>You have 27 TRIGGERED Incidents</b>
+
+# Does anybody here actually carry a pager? Hopefully not, but you certainly
+# receive alerts in some other fashion.
+#
+# Having no alerting is clearly an Anti-Pattern, having too many alerts is
+# *also* an Anti-Pattern. If an alert isn't actionable, it'll be ignored. "Load
+# is warning on www-app3", if you wake me up in the middle of the night with
+# that warning, and there's nothing I can or should do about it, then I'm prone
+# to start ignoring alerts.
+
+--
+
+# Another anti-pattern with regards to alerts is having one set of people who
+# set up and write the alerts, then another set of people responsible for
+# responding to the alerts.
+
+-- [jesus-facepalm.png] [right]
+
+On-Call
+
+# If you are one of those folks responding to alerts, drink with moderation,
+# oh, and if you're on call, don't take Ambien.
+
+--
+
+(amazing transition)
+
+# So let's talk a bit about reliability and stability. There's a tendency in
+# Operations to view all change as risk and therefore the enemy of stability
+# and reliability.
+
+--
+
+"It's working now, don't change it;
+we'll be more stable that way"
+
+# "It's working now, don't change it; we'll be more stable that way"  This one is
+# insidious. It goes against the folk wisdom of "If it ain't broke, don't fix
+# it." But what it leads to is
+#  - drift
+#  - effect on other components ("we can't take the XXX patch because we're on an
+#    old version of YYY")
+#  - cruft
+#  - something that's harder to fix when it does break
+#
+# You're better off if things are updated regularly. Even better if you regularly
+# rebuild them.
+--
+
+<b>Silos: Build'em Up</b>
+
+#` Slide:
+# - Pride/Developer Workstations
+# - No developer access to production
+# Lookout:
+# - Only Ops can deploy
+# - Ops builds a platform for Ops, lolz, no service to Dev
+# BT
+# - devs/ops ticket ping-pong
+
+--
+
+<b>Not Invented Here</b>
+
+# By far one of my favorite Anti-Patterns, is also one of the most subjective.
+# Typically referred to as "Not Invented Here Syndrome", it's characterized by
+# a need to "build everything yourself."
+#
+# What makes NIH most interesting to me is that everybody suffers from it,
+# Operations and App Developers alike have to constantly fight off the urge to
+# build their kingdom as they see fit.
+
+--
+
+Examples
+
+--
+
+Google - Everything
+
+Lookout - Maestro
+
+Sauce Labs - Puppet
+
+Slide - Apt/Puppet/etc
+
+Groupon - Puppet (w/ encap)
+
+
+--
+
+
+<b>Technical Fuckups</b>
+
+--
+
+
+
+
+--
