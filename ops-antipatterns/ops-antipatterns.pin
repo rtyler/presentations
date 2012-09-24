@@ -13,11 +13,12 @@ Operations Anti-Patterns
 
 <span size="xx-small">R. Tyler Croy</span>
 
-# Hello everybody, I'm R Tyler Croy, and I have done unspeakable things.
+# Hello everybody, I'm R Tyler Croy
 #
 # I'm going to talk to you today about Operations Anti-Patterns, really, this
 # is an exercise in Operations Shadenfreude, that will hopefully help us all
 # suck less in the future.
+#
 #
 # Before I start, most of you don't know me, so let me introduce myself
 
@@ -25,45 +26,62 @@ Operations Anti-Patterns
 
 I work here
 
-# I work at Lookout Mobile Security, as one of those evil app developers.
+# I work at Lookout Mobile Security, as one of those annoying app developers.
+# I've been called "wanty" on more than one occasion, only sometimes is it
+# justified
 
 --
 
 How am I at all qualified to give this talk?
 
-# Totes DevOps at Slide on the server team
-# One-man operations team at Apture
-# Totes DevOps at Lookout on the P&I team
-# Totes OpsOps for Jenkins
+# I guess the short anwer is that, I'm not. I submitted this talk proposal
+# while drinking on a plane, so I'm not totally sure I thought this through.
+#
+# In the past I've either been solely responsible for infrastructure, or worked
+# closely with the ops team, so I think I'm marginally qualified to talk about
+# some of this nonsense
 
---[top]
+--
+
+# transition
+
+--[camera-fail.png] [top]
 
 This talk is all about <b>failure</b>
 
-# There was a lightning talk that spread around the internet earlier this year
-# by Gary Bernhardt from CodeMash 2012, talking about some of the WAT worthy
-# things in JavaScript and Ruby. The talk by itself is fantastic, and I
-# recommend watching it, but the most longlasting effect it has had on me has
-# been the way Gary says "WAT".
+# I have tried to collect as many stories about failure as possible to prepare
+# for this talk. Not just technical failures, but process failures,
+# organization and cultural failures.
 #
-# It's distinct like a quacking duck, but so perfectly encapsulates the
-# emotions in so few letters.
-#
-# If you were to come in to work on Monday, and the CTO had proclaimed that all
-# internal work items must be communicated through JIRA. Jabber was to be
-# turned off, and if the developers needed anything from ops, and vice versa,
-# they would need to file a JIRA; understandably, you would say
+# Anything that made me react with -->
 
 -- [wat-toad.jpg] [fit]
 
 # Wat
+
+--
+
+
+# I've noticed a strong oral tradition amongst operations engineers to share
+# some of these things before, typically over beers or bottles of whiskey.
+#
+# Ops people love to bitch about mistakes, that kind of shadenfreude is
+# probably why I hang out with so many Ops people
+
+--
+
+# Anyways, let's talk Anti-Patterns
+
 --
 
 <b>Failure is not an option</b>
 
-# Failure, like security, isn't a boolean switch. The way to ensure effective
-# operational security is to enact layers of security that together help ensure
-# an overall secure state.
+# I think of failure a lot like I think about security. Normals tend to view
+# security like a light switch, either we're secure or we're not secure.
+# Failure is a lot like that for Ops, either the site is online, or it's not
+# and what are you doing talking go FIX IT FIX IT
+#
+# Security is about multiple layers of security -->
 
 --
 
@@ -73,75 +91,108 @@ This talk is all about <b>failure</b>
 
 --
 
-# Single points of failure are typically not designed into the system from the
-# beginning, they tend to evolve over time into single points of failure.
-#
 # Let's take a system I worked on as an example. Before I joined the
 # organization, they had a simple need to perform some minor tasks
-# asynchronously. Low-cost, infrequent asynchonous tasks. The person in charge
-# at the time decided to use a MySQL table as the work queue
+# asynchronously. Low-cost, infrequent asynchonous tasks. Somebody decided to
+# use a MySQL table as the work queue
+#
+# That by itself made me -->
 
--- [wat-little-girl.jpg]
+-- [wat-little-girl.jpg] [fit]
 
-# that's the first "wat"
+# "WAT?"
 
 --
 
-# More often than not, single points of failure evolve over time. In this case,
-# we started to put more traffic on this MySQL queue, churn on the DB increased
-# and we decided "hey, maybe using the database as a queue is a stupid idea"
-# and switched to Kestrel.
+# Anyways, the Queue table didn't see much traffic, since when your product is
+# lame and doesn't have a lot of up-take, your infrastructure can get by with
+# these kinds of silly decisions.
 #
-# Our single instance of Kestrel at the time worked fine, but we kept putting
-# more and more data into it.
+# More often than not, single points of failure evolve over time. As the
+# business started to do better, the Queue table got more traffic until our
+# tightly coupled app started to suffer from all the churn in the DB.
 #
-# After a few weeks of increased traffic and putting more and more data into
-# this single instance, we had a software bug kill off a mass of workers late
-# one night; the queues backed up, rtyler's were paged, the disk filled up and
-# the site went offline.
+# We decided "hey, maybe using the DB as a work queue is a stupid idea" and
+# switched to a tool called Kestrel. Created by Twitter, Kestrel is written in
+# Scala, so it met our criteria for "web scale."
+#
+# We set up a single instance of Kestrel -->
 
+-- [wat-owl.jpg] [fit]
 
--- [sad-kitty.jpg] [fit]
+# and everything worked fine, so we continued to put more and more stress onto
+# it.
+
+--
+
+# Until one night our workers died, queues backed up, disks filled up,
+# rtylers were paged and the site went offline.
+#
+# I've drawn a diagram of what happened -->
+
+- [white] [single-point-of-stupidity.png] [fit]
 
 # We had built up this single point of failure, never tested failure modes, and
-# ensured that the application MUST ABSOLUTELY have Kestrel online at all times
-# in order to work properly.
+# effectively had built the application and the backend architecture such that
+# every component was needed to be available at all times, otherwise the app
+# wouldn't work properly
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Points of failure evolve over time</span>
+
+# If you're not vigilant in keeping track of points of failure over time, you
+# might find yourself on -->
 
 --
 
-Team Never Fail
+<b>Team Never Fail</b>
 
-# "This component can never go down; we have to use HA (or some other
-# inordinately complex failover solution)" Vendors are very motivated to sell HA
-# solutions because   +they're lucrative and geeks are excited to buy them
-# because of the gee-whiz factor and fear about losing their jobs if the site
-# does go down. The many possible failure +modes of a complex component means,
-# though, that it's really impossible to test all of the ways something could
-# fail. And the significant complexity of HA software    +means it's almost
-# certainly got bugs itself.
+# Team Never Fail. Whenever you find yourself in position where certain
+# components are "absolutely critical" and they "cannot fail", then you've got
+# one of two options:
 #
-# Better to expect failure and be able to deal with
-# it.
+# - Call shenanigans and work with the app developers to identify what the
+# interdependencies are
+# - Spend a lot of money and time on high-availability kit for various critical
+# components. HA hardware will add more layers of complexity to the system that
+# you probably won't test the failure modes for as well
+#
+# The more expectation you can build into the system, the better, especially if
+# it's closer to the development of the app itself
 
 --
 
 <span size="xx-large" weight="heavy">Everything Will Fail</span>
 
-# The sooner you are accustomed to everything failing, the sooner you can start
-# planning for fault tolerance and disaster recovery.
+# The sooner you are accustomed to everything failing, the sooner both the ops
+# and developer teams can start to plan and design for fault tolerance and
+# disaster recovery.
 
---
+-- [fail-boat.png]
 
 Disaster Recovery
-(failure in the cloud)
 
 # One thing I've noticed many organizations doing is using multiple AWS regions for
 # disaster recovery or fail over. Yet somehow whenever US East 1 goes offline,
-# everybody dies.
+# everybody dies. Before AWS, companies would occasionally bring up multiple
+# data centers for disaster recovery, usually running identical infrastructures
+# or scalled down deployments in the backup site.
 #
-# Preparing for disaster recovery and fault tolerance is a noble goal, but most
-# people opt to pay the price of replicating between regions, and then never
-# actually exercise or automating the fail-over.
+# Preparing for disaster recovery and fault tolerance is a noble goal, but more
+# often than not I've seen many people choose to pay the price of running
+# duplicate infrastructures but they never actually test fail-over or disaster
+# recovery plans (if they have them)
+
+-- [wat-hedgehog.jpg] [fit]
+
+# wat
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Test disaster recovery plans</span>
+
+
 #
 # While we're on the topic of failure, let's talk about alerting really quick
 
@@ -160,9 +211,12 @@ Disaster Recovery
 
 --
 
+Team Nagios vs. Team Pager Duty
+
 # Another anti-pattern with regards to alerts is having one set of people who
 # set up and write the alerts, then another set of people responsible for
 # responding to the alerts.
+
 
 -- [jesus-facepalm.png] [right]
 
@@ -173,11 +227,15 @@ On-Call
 
 --
 
-(amazing transition)
+(<i>amazing transition</i>)
 
 # So let's talk a bit about reliability and stability. There's a tendency in
 # Operations to view all change as risk and therefore the enemy of stability
 # and reliability.
+#
+# As an app developer, I love it when Ops people tell me "no", sometimes it's
+# totally justified, and sometimes it's clearly a knee-jerk "no" that's come
+# from years of conditioning
 
 --
 
@@ -185,73 +243,111 @@ On-Call
 we'll be more stable that way"
 
 # "It's working now, don't change it; we'll be more stable that way"  This one is
-# insidious. It goes against the folk wisdom of "If it ain't broke, don't fix
-# it." But what it leads to is
-#  - drift
-#  - effect on other components ("we can't take the XXX patch because we're on an
-#    old version of YYY")
-#  - cruft
-#  - something that's harder to fix when it does break
+# insidious. It's similar to "if it ain't broke, don't fix it"
 #
-# You're better off if things are updated regularly. Even better if you regularly
-# rebuild them.
+# What will happen in practice is:
+#
+#  - code bases will stagnate, e.g. "we can't
+#  install a new version of libX because of other system dependencies
+#  - security patches and other critical fixes will need to be backported, or
+#  hand-rolled, leading to more system cruft
+#  - systems will drift
 
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Regular updates help mitigate long-term risk</span>
+
+# You're better off if things are updated regularly, otherwise you might be
+# inadvertantly accruing technical debt which will add more long term risk
+#
+# One of my favorite examples of this comes from a colleague who has worked at
+# a giant tech company, we'll call "Wahoo!"
+#
 --
 
 Wahoo!
 
-# One of my favorite examples of this comes from a colleague who has worked at
-# a giant tech company, we'll call "Wahoo!"
-#
 # The engineers at Wahoo! were very conservative about upgrades, so much so
-# that machines were running positively ancient versions of Debian with even
-# more ancient versions of the Linux kernel.
+# that when my colleague still worked at Wahoo!, machines were running
+# positively ancient versions of Debian with even more ancient versions of the
+# Linux kernel.
 #
 # The kernel was so old that a leap year fix wasn't back-ported, and when the
-# leap-year finally occurred, hoardes of machines dead-locked.
+# leap-year finally occurred, hoardes of machines dead-locked, ruining
+# everybody's New Year's celebrations
 
 -- [wat-llama.jpg] [fit]
+
+# wat?
+
+# I'm going to change gears a bit and talk about more people-related things. In
+# my vast amount of research that I've conducted, I can conclude that most
+# problems are caused by people.
+#
 
 --------------------------------------------------------------------------------
 
 <b>Silos: Build'em Up</b>
 
 # With the coining of the term "devops", this has become a hot topic in a lot
-# of engineering organizations.
+# of engineering organizations. "Let's tear down the wall between dev and ops"
+# they say.
 #
-# Remember that "WAT" I talked about earlier, with JIRAs being required to get
-# any work done within an organization. That's a real story. A colleague of
-# mine worked in an organization so dysfunctional, and so siloed, that all work
-# items had to be placed through JIRA. Need a machine racked? JIRA! Need
-# somebody to check the state of machines X, Y and Z? JIRA! Need anything from
-# anybody in any other team at any time? JIRA!
+# Having worked in smaller organizations, I never thought this was a problem
+# until I was told a story by a colleague of mine who worked for an
+# organization with such incredibly entrenched silos, that a solution that was
+# floatwd was to use JIRA for all inter-silo communications.
 #
-# Since people are fallable, busy and frantic creatures, some of these tickets
-# wouldn't get addressed in a timely fashion. In order to work effectively,
-# what my colleague ended up doing was filing multiple tickets at a time,
-# essentially asking for the same work to be done, and hedging his bets
+# "The devs use JIRA, the Ops use JIRA? What if they just used JIRA to
+# communicate and resolve their issues?
 
 -- [wat-baby.png] [fit]
 
-# wat
+# and so it was, all inter-silo communication would need to be sent through
+# JIRA, per corporate policy.
+#
+# Need a machine racked? JIRA! Need somebody to check the state of machines X,
+# Y and Z? JIRA! Need anything from anybody in any other team at any time?
+# JIRA!
+#
+# Since people are fallable, busy and frantic creatures, some of these tickets
+# wouldn't get addressed in a timely fashion.
+
+-- [transformer-facepalm.jpg] [fit]
+
+# In order to work effectively, what my colleague ended up doing was filing
+# multiple tickets at a time, essentially asking for the same work to be done,
+# and hedging his bets
+
 
 --
 
 Protect the environment
 
-# Another incantation of silos that I've seen and also been a part of, is where
-# Operations owns and is responsible for the environment in which the
-# application runs.
+# Another example of silos gone wild that I've seen has been where the
+# Operations group is responsible for *the* version of the environment in which
+# the application runs.
 #
-# This means no developer access to produciton, but in the past it has also
-# meant that the only way to get real testing or development done has been on
-# Operations managed and sanctioned workstations
+# This means no developer can access to produciton, but it could also mean that
+# the only way for a developer to perform an testing, or even *development* is
+# on Ops-managed and operated workstations and development servers.
+
+-- [wat-dog.jpg] [fit]
+
+#
+# Want to try out a new version of X? File an request to Ops.
+# Need more servers to run tests on? Beg Ops.
+#
+# I could list a few more examples, but I might wound myself up into an angry
 
 --
 
+Route around it
+
 # A colleague of mine became so frustrated with Operations "owning" the
-# environment, and begging for changes to be made, when it came time for him to
-# deploy a new product, he circumvented the Operations team entirely.
+# environment, and needing to beg for changes to be made, that when it came time for
+# his team to build and deploy a new product, he simply avoided the Ops team
+# entirely
 #
 # Using a service like Heroku, his team rapidly deployed and updated the
 # applicaiton in this non-Ops-managed environment for over a year before the
@@ -261,23 +357,86 @@ Protect the environment
 
 --
 
-Ops for Ops sake
+Ops for Ops' sake
 
 # the other major problem with silo-ization of this kind is that the Ops team
 # can lose focus on the actual business objectives and do work for "Ops' sake".
 #
-# - Ops builds a platform for Ops, lolz, no service to Dev
+# Building tools for managing systems or making things more efficient are
+# great, but if it's at the cost of the development team being able to release
+# new products, everybody loses.
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Ops should be part of the company's success</span>
+
+# Provisioned and well managed hosts don't mean anything unless they're helping
+# power the product or software that the organization is working on.
 #
-# The developer team is not an Operations customer; aka Operations for
-# Operations sake (per patrick and jay's points)
 
 --------------------------------------------------------------------------------
 
+<b>Jump into Hype-rspace</b>
+
+# As smart as most technical people are, sometimes we're so easily distracted
+# by the "new" "shiny" out there.
+#
+# A colleague of mine, who had deployed MySQL for years, knew all of its ins
+# and outs, decided to follow the hype and use a NoSQL database for a new
+# project he was working on.
+#
+# I don't want to offend anybody so let's make up a NoSQL data store and let's
+# call it "CouchDB"
+#
+# Because there was so much hype around this "CouchDB", and because MySQL had
+# burned him so many times in the past, he made the leap. He also made some
+# assumptions about how horizontally scalable the application itself was going
+# to be, he dreamed of all the clever things that they could do with the fancy
+# bells and whistles that "CouchDB" had
+#
+# "Our architecture is special" he thought, until a year later he realized what
+# they really needed was a relational database that they could cache and
+# optimize the shit out of
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">New tools are interesting because you don't
+know how much they suck yet</span>
+
+# If you've deployed MySQL for years and years, chances are you know where all
+# the bodies are buried. New, hyped up tools are tempting because you will
+# often compare the negatives of what you know, with the positives you hear
+# about the new tool, because you don't know what the negatives are yet
+
+--------------------------------------------------------------------------------
+
+Infrastructure as Code
+
+# Cool story bro; Then fucking treat it like one
+#
+# - Proper release strategies,
+# - Test your shit goddamnit
+# - git push -f lol
+
+--------------------------------------------------------------------------------
+
+(<i>another amazing transition</i>)
+
+# I don't really have a great segue between these points. I do want to talk
+# about -->
+
+--
+
+
 <b>Not Invented Here</b>
 
-# By far one of my favorite Anti-Patterns, is also one of the most subjective.
-# Typically referred to as "Not Invented Here Syndrome", it's characterized by
-# a need to "build everything yourself."
+# Not Invented Here Syndome, which is by far my favorite anti-pattern.
+# Partially because it can be so subjective, but also because it's amazingly
+# universal.
+#
+# NIH is characterized by the need to "build it/everything yourself." You know,
+# if we didn't build it, then it's clearly too shitty for us to run in
+# production.
 #
 # What makes NIH most interesting to me is that everybody suffers from it,
 # Operations and App Developers alike have to constantly fight off the urge to
@@ -328,29 +487,55 @@ Ops for Ops sake
 #
 # Build your own package management system why not!
 
--- [wat-dolphin.jpg] [fit]
+-- [wat-dolphin.jpg] [fit] [bottom]
 
-# wat
+<b>wat</b>
+
+# wat.
+#
+# Then you suddenly realize you've turned into Google where you build all your
+# crap all the way down the Linux itself.
 
 --
 
-The Line
+Where's the line?
 
 # Where do you draw the line with NIH? At one end of the extreme you can just
 # purchase everything that's not part of your core business, but is that cost
 # effective?
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Building everything yourself is expensive</span>
+
 #
 # Alternatively, you can build everything to meet your own needs, but then your
 # organization is supporting a bunch of shit that doesn't directly contribute
 # to the goals of what your company is doing.
+#
+# I can't suggest a hard and fast line to observe, but is it worth $100k a year
+# for your company to spend engineer time to build and maintain custom tools?
+#
+# In most cases it's not, so I recommend contributing to open source projects
+
+--
+
+# Now to my favorite category of anti-patterns -->
 
 
 --------------------------------------------------------------------------------
 
 <b>Technical Fuck-ups</b>
 
+# Technical fuck-ups; as best characterized by the phrase -->
+
 --
 
+"It seemed like a good idea at the time"
+
+# "It seemed like a good idea at the time"
+
+--
 
 Netboot all the things!
 
@@ -361,18 +546,44 @@ Netboot all the things!
 # storage fails it takes out a +big chunk of machines. Better to have local OS,
 # automated provisioning, and deal with machine failures caused by disk faults.
 
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Do not netboot all the things</span>
 
 --
 
-Backups and Recovery
+Log all the things!
+
+# Also known as "just in case" data retention. Storing and
+# aggregating logs of all shapes an sizes can be ("just in case" data
+# retention). What's even worse is if all of these logs are just sitting on app
+# and db servers, filling up disk.
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Logstash or /dev/null</span>
+
+# With tools like Splunk or Logstash, it's easy nowadays to properly analyze
+# log data, but if you're not paying attention to any of the data, you might as
+# well save yourself some disk space and delete
+
 
 --
 
+Test your backups
 
-Log all the things
+# I'm just going to assume you have backups, but when is the last time you
+# tested them?
+#
+# A suggestion for testing backups though
 
-Analyze none of the things
+- [more-you-know.jpg] [fit] [bottom]
 
-# ("just in case" data retention)
+<span size="x-large" weight="heavy">Don't delete production data to test
+your backups</span>
+
+
+# I wish I was kidding about this one, and no, I didn't do it.
 
 --
+
