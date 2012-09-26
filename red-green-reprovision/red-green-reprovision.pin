@@ -1,0 +1,216 @@
+#!/usr/bin/env pinpoint
+
+[fill]
+[black]
+[center]
+[text-align=center]
+[single-stop-light.jpg]
+
+--
+
+<span size="large" weight="heavy">Red, green, re-provision</span>
+Test-Driven Operations
+
+<span size="xx-small">R. Tyler Croy
+tyler@linux.com</span>
+
+
+# Thanks everybody for sticking around, this is the last block of talks for all
+# of PuppetConf.
+
+
+-- [lookout_frontdesk.jpg] [right]
+
+I work here
+
+-- [terminal_ruby.png]
+
+As an app developer
+
+# It really doesn't matter who am I. I might not be the most qualified to give
+# this talk, but whatever, I'm here.
+
+
+# What do Ops engineers and bananas have in common?  Neither of them are
+# engineers.
+
+--
+
+
+<span size="large" weight="heavy">Let's talk testing</span>
+
+# Before we dive into any of the operations-y bits, I'd like to first talk a
+# little bit about testing in general.
+#
+# At the bottom of the totem pole, there's -->
+--
+
+<b>Manual Testing</b>
+
+# Manual testing (explain)
+
+--
+
+<b>Unit Testing</b>
+
+# Unit testing, what it typically means
+
+--
+
+<b>Integration Testing</b>
+
+# Integration testing and how it pertains to the reactions between various
+# components in a system
+
+--
+
+<b>Acceptance Testing</b>
+
+# Acceptance testing, as in the over-arching, high-level test that effectively
+# can verify "this is done" versus "not done"
+
+--
+
+# These are the various "buckets" to which "testing" applies. Let's now cover
+# the basics of -->
+
+--
+
+<b>TDD</b>
+
+# For the purposes of this talk, I will be referring to TDD as in "test-first
+# development" that is to say you write a failing unit test that exhibits the
+# functionality you wish to implement, then you implement it, turning the test
+# green.
+#
+# This is where the notion of "red, green" comes from.
+#
+# What a number of people consider to have supercede, or further refined TDD,
+# is -->
+
+--
+
+<b>BDD</b>
+
+# BDD, as in Behavior Driven Development. BDD introduces the concept of
+# "outside-in" focused development
+#
+# Is closely related, if not identical to -->
+
+--
+
+<b>ATDD</b>
+
+--
+
+neat
+
+# So that's all neat I suppose, it's become fairly commonplace in most software
+# shops, there are still stragglers who insist on doing all different kinds of
+# manual testing and poorly specified software development.
+#
+# We'll forget about them for now, since they're wasting time and money
+# building crappy products.
+#
+# Let's focus now more on Operations
+
+--
+
+close your eyes and imagine..
+
+# imagine, if you will, the following scenario:
+#
+# The developers you work are building a new web service, and you've been
+# tasked to work with them to make sure it gets provisioned and deployed.
+#
+--
+
+what do you do?
+
+# What do you do? Where do you start? Perhaps you already have a big monolithic
+# Puppet repository where all service and application host are provisioned
+# from. Maybe you don't.
+#
+# Do you dig through the Puppet Forge to find modules that meet your needs? How
+# do you know they don't suck, or even work at all?
+#
+# Perhaps you just start a new git repository, and use Vagrant to start
+# cobbling together the manifests needed to run this new service. Is any of
+# that re-usable? Is it maintainable?
+#
+# Maybe you go another direction and use the Puppet staging host your company
+# has and start adding manifests under `/etc/puppet`?
+#
+#
+# What is the most maintainable work-flow which won't
+# saddle you with technical debt in the future?
+#
+# First things first, you should probably take a deep breath -->
+
+--
+
+
+
+# In this talk, I will take you from the "outside" inward, writing tests along
+# the way with Cucumber and RSpec. This approach encourages you to think more
+# about where the lines are drawn between the various services and resources
+# you're configuring. While the work-flow is a departure from the "traditional
+# sysadmin" role, the resulting modules can be more easily re-used and
+# re-factored.
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+Scenario: Stand-up a web server properly
+  Given an empty host
+  And the host is classified as a www node
+  When I provision the host
+  Then it should be running a web server
+  And it should be responding to web requests
+
+--
+
+What is TDD/BDD/ATDD
+
+- Who are the "stake-holders" involved in the definition of the "outside" for Operations code?
+- What constitutes the "inside" for Operations code (rspec-puppet comes in here)
+- How/where do you transition from working "on the outside" to working "on the inside"
+
+--
+
+Why bother in Operations?
+
+- Benefits of thinking about test-driving the design for configuration management code
+- Direct stability/reliability benefits
+- "Infrastructure as code" so treat it like code
+- Less time to get changes into production by reducing the "guess-and-check" cycle
+- Clearer definition of what work actually needs to get done to meet "the business needs"
+--
+
+Where does monitoring fit into the TDD Ops picture
+
+- Can you write monitoring checks up front?
+- Can acceptance tests become monitoring? Your only monitoring?
+- Downsides of using monitoring or Chef Server/puppetmasterd for development (lol slow cycle times, miserable to work with
+-
+--
+
+Outside-in in practice
+
+- Beta-quality experimentation with Pentagram
+- Work on puppet-prosody module
+
+
+--
+
+Tooling
+
+- puppetlabs_spec_helper
+- rspec-puppet
+- cucumber
+- where should it be used
+- where should it absolutely not  be used (and how shouldn't it be used)
+- cuken
+- cucumber-nagios
+- Vagrant/Blimpy
+
+--
