@@ -14,7 +14,6 @@ Test-Driven Operations
 <span size="xx-small">R. Tyler Croy
 tyler@linux.com</span>
 
-
 # Thanks everybody for sticking around, this is the last block of talks for all
 # of PuppetConf.
 
@@ -240,7 +239,29 @@ You love testing
 # If we want to take this outside-in testing approach, what does that look like
 # for Operations?
 #
-# The first thing we need to identify is, who are the -->
+# Before we dive in, I'd like to introduce some of the tools we'll be using -->
+
+--
+
+<b>Cucumber</b>
+<span size="xx-small">http://cukes.info</span>
+
+# We'll use Cucumber for defining our acceptance critiera; Cucumber itself is a
+# plain-text tool that can map user defined strings to code underneath that
+# actually runs the test
+
+--
+
+<b>rspec-puppet</b>
+<span size="xx-small">http://rspec-puppet.com</span>
+
+# RSpec itself, is a testing tool that a large proportion of the Ruby community
+# uses, so it's fortunate that rspec-puppet exists as well.
+#
+# Unfortunately it doesn't look like there's any talks on rspec-puppet
+# specifically this year, but if you'd like to learn more about it head to
+# rspec-puppet.com where there's some simple tutorials
+#
 
 --
 
@@ -368,16 +389,6 @@ Drill inward
 # to cheat and just grab the apache module from the forge for this exercise,
 # but if I were doing this "for reals" then I would just grab that :)
 #
-# To unit test our apache module we'll use -->
-
---
-
-
-rspec-puppet
-
-# Unfortunately it doesn't look like there's any talks on rspec-puppet
-# specifically this year, but if you'd like to learn more about it head to
-# rspec-puppet.com where there's some simple tutorials
 #
 # We'll start scaffolding out things -->
 
@@ -402,7 +413,7 @@ class apache {
 -- [font=monospace 50px] [text-align=left] [left]
 
 describe 'apache' do
-  it { should include_package('apache2') }
+  it { should contain_package('apache2') }
 end
 
 -- [font=monospace 50px] [text-align=left] [left]
@@ -422,9 +433,9 @@ class apache {
 -- [font=monospace 50px] [text-align=left] [left]
 
 describe 'apache' do
-  it { should include_package('apache2') }
+  it { should contain_package('apache2') }
   it {
-    should include_service('apache2').with(
+    should contain_service('apache2').with(
       'ensure' => 'running'
     )
   }
@@ -455,9 +466,9 @@ class apache {
 -- [font=monospace 50px] [text-align=left] [left]
 
 describe 'apache' do
-  it { should include_package('apache2') }
+  it { should contain_package('apache2') }
   it {
-    should include_service('apache2').with(
+    should contain_service('apache2').with(
       'ensure'  => 'running',
       'require' => 'Package[apache2]'
     )
@@ -487,27 +498,20 @@ neat!
 
 <b>Monitoring in TDD-Ops?</b>
 
-# Can you write monitoring checks up front?
-# Can acceptance tests become monitoring? Your only monitoring?
-# Downsides of using monitoring or Chef Server/puppetmasterd for development (lol slow cycle times, miserable to work with
+# I'm not really sure where monitoring fits into the picture, for me monitoring
+# is something altogether separate from testing, mostly because I can't
+# envision a monitoring-driven workflow
 #
+# Acceptance tests might turn into monitoring, or a subset of monitoring, that
+# part I'm not sure of
 
 --
 
-<b>Tooling</b>
+<b>Other Tools</b>
 
 -
 
 puppetlabs_spec_helper
-
---
-
-rspec-puppet
-
-
---
-
-Cucumber
 
 --
 
