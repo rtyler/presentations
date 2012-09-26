@@ -145,22 +145,177 @@ what do you do?
 # What is the most maintainable work-flow which won't
 # saddle you with technical debt in the future?
 #
-# First things first, you should probably take a deep breath -->
+# First things first, you should probably take a deep breath, because chances
+# are the dev team told you when they wanted to ship the project, instead of at
+# the beginning -->
 
 --
 
+(this is why daddy drinks)
+
+# which is prone to happening. on behalf of my fellow frantic app developer, I
+# apologize.
+
+--
+
+A better approach
+
+# I'm going to try to avoid being too presciptive here, so bear with me.
+#
+# Let's talk about applying fairly common practices from the software
+# engineering world to operations.
+#
+# For starters, we're going to be good citizens and write Puppet modules to
+# solve our problems. Secondly, we're going to appraoch the problem from the
+# outside, and move inward with Cucumber first, then RSpec.
+#
+# This approach helps us think about problems in terms of where the borders
+# between components are, and how different resources interact.
+#
+# This workflow is definitely a move away from what I'd classify as "the
+# traditional sysadmin workflow", but the resulting Puppet modules should be
+# more re-usable, refactorable and easier to maintain in the long run.
+
+--
+
+<b>but why?</b>
+
+# but why go through all that trouble?
+
+--
+
+<b>Infrastructure as code</b>
+
+# If we say that infrastructure is code, then we should really treat it like
+# code. Software engineering has decades of research and real-world practice
+# that has proven certain workflows to be ideal for greating higher quality
+# code.
+#
 
 
-# In this talk, I will take you from the "outside" inward, writing tests along
-# the way with Cucumber and RSpec. This approach encourages you to think more
-# about where the lines are drawn between the various services and resources
-# you're configuring. While the work-flow is a departure from the "traditional
-# sysadmin" role, the resulting modules can be more easily re-used and
-# re-factored.
+-- [cost-of-testing.png] [fit]
+
+# If we refer to this amazing, very scientific graph I just found on my desk
+# right after I drew it. The cost of testing and finding regressions on your
+# local machine is going to be very low, this is the core concept behind all
+# test-driven development, rapid iteration and failing very fast.
+#
+# If bugs/issues are found on a staging host, that likely means that other code
+# has been merged and then "throughput' on the Git branch that is deployed to
+# the staging environment must be paused so a change can be reverted, or a
+# hotfix deployed.
+#
+# If a regression makes it all the way to production, the sky is the limit for
+# how costly fixing the issue might be. It could down the entire site, it
+# could reqyure costly data clean-up operations.
+#
+# Even if we use test-driven practices -->
+
+
+--
+
+Production won't be bug-free
+
+# Production won't be bug free, some issues will slip through, that's an
+# unfortunate fact of life. The goal here is to catch as many regressions or
+# problems where it's cheapest to deal with them, on my local machine
+#
+# Another benefit of test-driving operations is that -->
+--
+
+clearer definition of work
+
+# we can help create clearer definitions of the work that needs to be done.
+# This really applies to BDD or ATDD where we specify "what we want to see" up
+# front, which means that once those tests are green, we're done with the work,
+# and we can ship it!
+
+--
+
+You love testing
+
+# So now I've convinced you that writing tests is a good idea, even if you're
+# not convinced, just nod your head and play along.
+#
+# If we want to take this outside-in testing approach, what does that look like
+# for Operations?
+#
+# The first thing we need to identify is, who are the -->
+
+--
+
+<b>Stakeholders</b>
+
+# Stakeholders, who is "on the outside" of the work we're doing
+#
+# Let's sketch out what Developers as stakeholders would look like, to do this,
+# we'll use Cucumber to enumerate this right off the bat
 
 -- [font=monospace 50px] [text-align=left] [left]
 
-Scenario: Stand-up a web server properly
+Feature: Serve the PuppetConf streaming web service
+  In order to serve up the PuppetConf
+  video stream to millions of fans
+
+  As a developer
+
+  Web hosts should be configured to run the app
+
+
+# This is just meta-data at the top of a `.feature` file for Cucumber, it
+# serves no other purpose other than to help inform the reader of the
+# context/goals of the feature
+#
+# In order to serve up the PuppetConf video stream to millions of fans
+# As a developer
+# Web hosts should be configured to run the app
+#
+# This feels a little janky. With my developer hat on, I really don't care all
+# that mugh about how the application is configured, provisioned, or even run,
+# so long as it just runs!
+#
+# What about Operatiosn as its own stakeholder?
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+Feature: Serve the PuppetConf streaming web service
+  In order to serve up the PuppetConf
+  video stream to millions of fans
+
+  As an Operations Engineer
+
+  Web hosts should be configured to run the app
+
+# I'll add in "As an Operations Engineer" and this reads a little bit better,
+# although this is really just semantics at this point, what this tells me is
+# that the contents of this .feature file are *for* Operations.
+#
+# Think of it more as executable documentation, with some goals in place. I
+# think this is enough to really determine, at least at this step of the way,
+# who the stakeholders for operational work are.
+#
+# I'm going to go ahead and create our a few scenarios for our streaming web
+# service
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+Scenario: Lock down SSH for all servers
+  Given an empty host
+  When I provision the host
+  Then port 22 should be reachable
+  And SSH should not permit password-less logins
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+Scenario: Add a new stream server to the pool
+  Given an new stream server
+  When I provision the host
+  Then the host should be added to the Nagios HTTP group
+  And a new backend should be added to HAProxy
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+Scenario: Set up a basic stream server
   Given an empty host
   And the host is classified as a www node
   When I provision the host
@@ -169,48 +324,218 @@ Scenario: Stand-up a web server properly
 
 --
 
-What is TDD/BDD/ATDD
+<b>In Practice</b>
 
-- Who are the "stake-holders" involved in the definition of the "outside" for Operations code?
-- What constitutes the "inside" for Operations code (rspec-puppet comes in here)
-- How/where do you transition from working "on the outside" to working "on the inside"
+# This is all well and good, plain english non-sense that doesn't actually test
+# anything, I'm going to take this last scenario and dig into it.
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+Given an empty host
+
+# This isn't terribly interesting, we're just stating that for the acceptance
+# test we want to always start with a fresh host. It's more informative than
+# anything here, so let's move on.
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+And the host is classified as a www node
+
+# While we are really talking about testing Puppet modules underneath the hood,
+# notice that there's no mention of this in the step. We are hand-waving a
+# concept into our Operations organization that means "a www node"
+#
+# This could mean we add a "www" module into our tree, but let's create a node
+# definition -->
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+node /^www\\d+\\.puppetlabs\\.com/ {
+  include ssh
+  include apache
+  include stream-app
+}
+
+# So this is what we mean when we say "the host is classified as a www node".
+# This does give us a couple modules to work with so let's -->
 
 --
 
-Why bother in Operations?
+Drill inward
 
-- Benefits of thinking about test-driving the design for configuration management code
-- Direct stability/reliability benefits
-- "Infrastructure as code" so treat it like code
-- Less time to get changes into production by reducing the "guess-and-check" cycle
-- Clearer definition of what work actually needs to get done to meet "the business needs"
+# Drill inward and start test-driving out the individual modules, for the
+# interest of time, I'm going to focus on the "apache" module. We're not going
+# to cheat and just grab the apache module from the forge for this exercise,
+# but if I were doing this "for reals" then I would just grab that :)
+#
+# To unit test our apache module we'll use -->
+
 --
 
-Where does monitoring fit into the TDD Ops picture
 
-- Can you write monitoring checks up front?
-- Can acceptance tests become monitoring? Your only monitoring?
-- Downsides of using monitoring or Chef Server/puppetmasterd for development (lol slow cycle times, miserable to work with
+rspec-puppet
+
+# Unfortunately it doesn't look like there's any talks on rspec-puppet
+# specifically this year, but if you'd like to learn more about it head to
+# rspec-puppet.com where there's some simple tutorials
+#
+# We'll start scaffolding out things -->
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+<b>spec/classes/apache_spec.rb</b>
+\--
+describe 'apache' do
+
+end
+
+# In spec/classes/apache_spec.rb
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+<b>modules/apache/manifests/init.pp</b>
+\--
+class apache {
+}
+
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+describe 'apache' do
+  it { should include_package('apache2') }
+end
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+class apache {
+  package {
+    'apache2' :
+      ensure => installed;
+  }
+}
+
+# Now we've impleented our first thing, and our test passes! Let's pretend that
+# the stupid Ubuntu apache package doesn't start apache by default and run our
+# Cucumber again. The test will still fail, unfortuantely, so let's add a
+# service
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+describe 'apache' do
+  it { should include_package('apache2') }
+  it {
+    should include_service('apache2').with(
+      'ensure' => 'running'
+    )
+  }
+end
+
+#
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+class apache {
+  package {
+    'apache2' :
+      ensure => installed;
+  }
+  service {
+    'apache2' :
+      ensure => running;
+  }
+}
+
+# With this we can run Cucumber, maybe it passes, maybe it doesn't! We've
+# left out a requires statement here, so the service resource isn't linked to
+# the package.
+#
+# Let's fix that
+
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+describe 'apache' do
+  it { should include_package('apache2') }
+  it {
+    should include_service('apache2').with(
+      'ensure'  => 'running',
+      'require' => 'Package[apache2]'
+    )
+  }
+end
+
+-- [font=monospace 50px] [text-align=left] [left]
+
+class apache {
+  package {
+    'apache2' :
+      ensure => installed;
+  }
+  service {
+    'apache2' :
+      ensure  => running,
+      require => Package[apache2];
+  }
+}
+
+# Now things should pass in RSpec, and they should pass in Cucumber
+--
+
+neat!
+
+--
+
+<b>Monitoring in TDD-Ops?</b>
+
+# Can you write monitoring checks up front?
+# Can acceptance tests become monitoring? Your only monitoring?
+# Downsides of using monitoring or Chef Server/puppetmasterd for development (lol slow cycle times, miserable to work with
+#
+
+--
+
+<b>Tooling</b>
+
 -
---
 
-Outside-in in practice
-
-- Beta-quality experimentation with Pentagram
-- Work on puppet-prosody module
-
+puppetlabs_spec_helper
 
 --
 
-Tooling
+rspec-puppet
 
-- puppetlabs_spec_helper
-- rspec-puppet
-- cucumber
-- where should it be used
-- where should it absolutely not  be used (and how shouldn't it be used)
-- cuken
-- cucumber-nagios
-- Vagrant/Blimpy
+
+--
+
+Cucumber
+
+--
+
+Cuken
+
+--
+
+cucumber-nagios
+
+--
+
+Vagrant
+
+--
+
+Blimpy
+
+--
+
+<b>Questions?</b>
+
+
+--
+
+<b>Thanks</b>
+
+--
+
+<b>Bonus Material!</b>
 
 --
