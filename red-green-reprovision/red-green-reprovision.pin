@@ -469,7 +469,7 @@ describe 'apache' do
   it { should contain_package('apache2') }
   it {
     should contain_service('apache2').with(
-      'ensure'  => 'running',
+      'ensure'  => 'running'
       'require' => 'Package[apache2]'
     )
   }
@@ -543,3 +543,15 @@ Blimpy
 <b>Bonus Material!</b>
 
 --
+
+<b>A full stack test with Blimpy</b>
+<span size="xx-small">github.com/rtyler/red-green-example</span>
+
+
+
+-- [blimpy-demo.mp4] [fit]
+
+--
+
+
+
