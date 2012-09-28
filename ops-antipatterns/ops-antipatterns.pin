@@ -34,31 +34,34 @@ I work here
 
 How am I at all qualified to give this talk?
 
-# I guess the short anwer is that, I'm not. I submitted this talk proposal
-# while drinking on a plane, so I'm not totally sure I thought this through.
+# I guess the short anwer is that, -->
+
+--
+
+(i'm not)
+
+--
+
+# I'm probably not. I submitted this talk proposal while drinking on a plane,
+# so I'm not totally sure I thought this through.
 #
 # In the past I've either been solely responsible for infrastructure, or worked
 # closely with the ops team, so I think I'm marginally qualified to talk about
 # some of this nonsense
+#
+# In essense, I want this talk -->
 
---
-
-# transition
 
 --[camera-fail.png] [top]
 
 This talk is all about <b>failure</b>
 
+# To be about failure
+#
 # I have tried to collect as many stories about failure as possible to prepare
 # for this talk. Not just technical failures, but process failures,
 # organization and cultural failures.
 #
-# Anything that made me react with -->
-
--- [wat-toad.jpg] [fit]
-
-# Wat
-
 --
 
 
@@ -70,9 +73,117 @@ This talk is all about <b>failure</b>
 
 --
 
+<b>Anti-Patterns</b>
+
 # Anyways, let's talk Anti-Patterns
+# (explain how a lot of these are patterns that work givne a place and time,
+# but can/do lead to cruft and technical debt)
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Use Configuration Management</span>
+
+# Might as well start with a no-brainer considering that we're at PuppetConf.
+# Not using Puppet, or any other config management tool, means that every
+# machine or image is hand-crafted, and isn't auditable without a ton of work.
+#
+# That said, if you're going to treat -->
 
 --
+
+Infrastructure as Code
+
+# Infrastucture as code, then you should treat the project like a real
+# grown-up software engineering project with real software engineering
+# practices
+#
+# This means things like -->
+
+--
+
+Testing
+
+# Testing is something I'm going to touch in my talk tomorrow, but to touch on
+# it briefly here. If I'm a colleague of yours, I'd like to know that the
+# Puppet code you're working on does what it's supposed to do, and that means
+# that there needs to be at the *least* manual testing involved, ideally some
+# automated testing with tools like rspec-puppet.
+#
+# If you're just manually testing things, that works for a small group or even
+# a smaller project, but as the project grows it becomes more and more
+# difficult to effectively test your Puppet
+#
+# I've called this ->
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Tinker-Driven Development doesn't scale</span>
+
+# Tinker-Driven Development, and it doesn't scale well at all.
+#
+# Aside from testing, there's also a concept of -->
+
+--
+
+Release Management
+
+# Release management that should be applied to your Puppet code. You would
+# probably want to punch me in the face if I said "here's some code, I've never
+# compiled it, but let's deploy it (also, you're on call!)".
+#
+# Software should have a defined release management process defining how and
+# when code is deployed into production, what amount of testing, builds or code
+# reviews go into it.
+--
+
+I spilled some Dev in your Ops
+
+#
+# Having zero engineers in your Ops organization who are developers, or come
+# from a development background will eventually stunt your growth as a team and
+# cause you to block on other teams to build tools for you. It can, and has,
+# also lead to more traditional sysadmins cobbling together years and years of
+# scripts with zero documentation, tests or release process, greatly increasing
+# some of the risk you would need to live with on a day-to-day basis
+#
+#
+# Somewhat related, I want to say something really
+# quick about -->
+
+--
+
+/etc/puppet
+
+# /etc/puppet. I've watched people edit code directly in /etc/puppet on a
+# staging or even a production master, and then after they've tinkered with it
+# enough to get things working, they might commit it. Or they might forget to
+# run the commit, then they might accidentally destroy the staging machine in
+# AWS.
+#
+# If I can't (and shouldn't) edit application code in production, neither
+# should you :)
+#
+# It's a a lot better to write and test your Puppet, even if you're only
+# testing manually, on your local machine using Puppet + Vagrant
+#
+# The underlying theme here is -->
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Code is serious business</span>
+
+# Code is serious business, thre's decades of experience, practices and
+# workflows thought-out for software engineering projects and they apply quite
+# well to Infrastructure as Code
+#
+
+--
+
+<b>Mind set/Workflow</b>
+
+
+--
+
 
 <b>Failure is not an option</b>
 
@@ -91,18 +202,16 @@ This talk is all about <b>failure</b>
 
 --
 
+unfortunate real world example
+
 # Let's take a system I worked on as an example. Before I joined the
 # organization, they had a simple need to perform some minor tasks
 # asynchronously. Low-cost, infrequent asynchonous tasks. Somebody decided to
 # use a MySQL table as the work queue
 #
-# That by itself made me -->
-
--- [wat-little-girl.jpg] [fit]
-
-# "WAT?"
-
 --
+
+MySQL Queue is Web Scale
 
 # Anyways, the Queue table didn't see much traffic, since when your product is
 # lame and doesn't have a lot of up-take, your infrastructure can get by with
@@ -115,20 +224,19 @@ This talk is all about <b>failure</b>
 # We decided "hey, maybe using the DB as a work queue is a stupid idea" and
 # switched to a tool called Kestrel. Created by Twitter, Kestrel is written in
 # Scala, so it met our criteria for "web scale."
-#
-# We set up a single instance of Kestrel -->
-
--- [wat-owl.jpg] [fit]
-
-# and everything worked fine, so we continued to put more and more stress onto
-# it.
 
 --
 
+"worked fine"
+
+#
+# We set up a single instance of Kestrel and everything worked fine, so we
+# continued to put more and more stress onto it.
+#
 # Until one night our workers died, queues backed up, disks filled up,
 # rtylers were paged and the site went offline.
 #
-# I've drawn a diagram of what happened -->
+# I've drawn a diagram of the infrastructure at the time -->
 
 - [white] [single-point-of-stupidity.png] [fit]
 
@@ -158,8 +266,8 @@ This talk is all about <b>failure</b>
 # components. HA hardware will add more layers of complexity to the system that
 # you probably won't test the failure modes for as well
 #
-# The more expectation you can build into the system, the better, especially if
-# it's closer to the development of the app itself
+# The more expectation for failure you can build into the system, the better,
+# especially if it's closer to the development of the app itself
 
 --
 
@@ -168,29 +276,6 @@ This talk is all about <b>failure</b>
 # The sooner you are accustomed to everything failing, the sooner both the ops
 # and developer teams can start to plan and design for fault tolerance and
 # disaster recovery.
-
--- [fail-boat.png]
-
-Disaster Recovery
-
-# One thing I've noticed many organizations doing is using multiple AWS regions for
-# disaster recovery or fail over. Yet somehow whenever US East 1 goes offline,
-# everybody dies. Before AWS, companies would occasionally bring up multiple
-# data centers for disaster recovery, usually running identical infrastructures
-# or scalled down deployments in the backup site.
-#
-# Preparing for disaster recovery and fault tolerance is a noble goal, but more
-# often than not I've seen many people choose to pay the price of running
-# duplicate infrastructures but they never actually test fail-over or disaster
-# recovery plans (if they have them)
-
--- [wat-hedgehog.jpg] [fit]
-
-# wat
-
-- [more-you-know.jpg] [fit] [bottom]
-
-<span size="x-large" weight="heavy">Test disaster recovery plans</span>
 
 
 #
@@ -265,7 +350,8 @@ we'll be more stable that way"
 #
 --
 
-Wahoo!
+Example from a totally
+made-up company.
 
 # The engineers at Wahoo! were very conservative about upgrades, so much so
 # that when my colleague still worked at Wahoo!, machines were running
@@ -276,9 +362,9 @@ Wahoo!
 # leap-year finally occurred, hoardes of machines dead-locked, ruining
 # everybody's New Year's celebrations
 
--- [wat-llama.jpg] [fit]
+--
 
-# wat?
+cool segue, bro
 
 # I'm going to change gears a bit and talk about more people-related things. In
 # my vast amount of research that I've conducted, I can conclude that most
@@ -301,7 +387,9 @@ Wahoo!
 # "The devs use JIRA, the Ops use JIRA? What if they just used JIRA to
 # communicate and resolve their issues?
 
--- [wat-baby.png] [fit]
+--
+
+"Won't Fix" as a Service
 
 # and so it was, all inter-silo communication would need to be sent through
 # JIRA, per corporate policy.
@@ -332,11 +420,16 @@ Protect the environment
 # the only way for a developer to perform an testing, or even *development* is
 # on Ops-managed and operated workstations and development servers.
 
--- [wat-dog.jpg] [fit]
+--
+
+breaking down
 
 #
 # Want to try out a new version of X? File an request to Ops.
 # Need more servers to run tests on? Beg Ops.
+#
+# (reference Gene's keynote talk about putting puppet code and app code in one
+# repo)
 #
 # I could list a few more examples, but I might wound myself up into an angry
 
@@ -373,6 +466,7 @@ Ops for Ops' sake
 # Provisioned and well managed hosts don't mean anything unless they're helping
 # power the product or software that the organization is working on.
 #
+# Somewhat related to the topic of "Ops for Ops' Sake" is: hype. -->
 
 --------------------------------------------------------------------------------
 
@@ -410,16 +504,6 @@ know how much they suck yet</span>
 
 --------------------------------------------------------------------------------
 
-Infrastructure as Code
-
-# Cool story bro; Then fucking treat it like one
-#
-# - Proper release strategies,
-# - Test your shit goddamnit
-# - git push -f lol
-
---------------------------------------------------------------------------------
-
 (<i>another amazing transition</i>)
 
 # I don't really have a great segue between these points. I do want to talk
@@ -446,10 +530,6 @@ Infrastructure as Code
 
 # What if I told you we built a configuration management tool? Understandably,
 # you would say
-
--- [wat-sheeps.jpg]
-
-# wat
 
 --
 
@@ -487,14 +567,14 @@ Infrastructure as Code
 #
 # Build your own package management system why not!
 
--- [wat-dolphin.jpg] [fit] [bottom]
+--
 
-<b>wat</b>
+wut
 
-# wat.
-#
 # Then you suddenly realize you've turned into Google where you build all your
-# crap all the way down the Linux itself.
+# crap all the way down the Linux itself. Which might owrk if you're Google,
+# but if your headcount is under a few thousand people, you probably shouldn't
+# be inventinve so much
 
 --
 
@@ -525,15 +605,27 @@ Where's the line?
 
 --------------------------------------------------------------------------------
 
-<b>Technical Fuck-ups</b>
+<b>Technical Oopsies</b>
 
-# Technical fuck-ups; as best characterized by the phrase -->
+# I originally had this slide titled "technical fuck-ups", which feels a bit
+# too aggressive for me. I will definitely call my mistakes what they are, but
+# it's not always the most diplomatic way to describe other people's mistakes.
+#
+# Technical oopsies can be best characterized by the phrase -->
 
 --
 
 "It seemed like a good idea at the time"
 
 # "It seemed like a good idea at the time"
+#
+# The key thing ot keep in mind here is that there's a time and place for
+# "short-cuts" or "cruft". When the company is 10 people, you can and should
+# take certain short-cuts, but as the organization scales, you need to address
+# those issues sooner rather than later, lest they become so engrained that you
+# can't remove them later
+#
+# Let's take one such example
 
 --
 
@@ -587,3 +679,94 @@ your backups</span>
 
 --
 
+Network free-for-all
+
+#
+# For a smaller company, it might be acceptable to have the corporate LAN and
+# the production network act as the same VLAN, but this goes out of style
+# quickly.
+#
+# As much as you like your marketing and sales people, they, and their
+# machines, should not have any routable access to the production network
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Access Control your network</span>
+
+--
+
+Multi-site.
+
+# I've seen lots of Ops people get giddy at the idea of multi-site, it's such a
+# cool geek-cred sort of thing "oh yeah, we deploy to datacenters across the
+# US, blah blah blah"
+#
+# I've also seen many Ops people perform the capital and time investment to
+# spin up and keep data centers online, but then they never get around to
+# making the app changes or fail-over changes necessary to use multiple sites.
+#
+# This kind of leads me to -->
+
+-- [fail-boat.png]
+
+Disaster Recovery
+
+# Disaster Recovery: Even though your org might have spent so much time setting
+# up multiple regions for fail-over or disaster recover, have you tested it?
+# How often?
+#
+# Somehow whenever US East 1 dies, everybody else seems to die too
+#
+# Preparing for disaster recovery and fault tolerance is a noble goal, but more
+# often than not I've seen many people choose to pay the price of running
+# duplicate infrastructures but they never actually test fail-over or disaster
+# recovery plans (if they have them)
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Test disaster recovery plans</span>
+
+--
+
+Everybody gets to deploy!
+
+#
+# The last I'll leave you with, is near and dear to my heart as an app
+# developer. As much as I have loved to be able to deploy from my local laptop
+# into production, it's really a genuinely bad idea.
+#
+# If a deployment is an rsync from a laptop, there's almost *no* reasonable way
+# to back-track from production issues or figure out what version of the code
+# is actually in production. Perhaps I was lazy or forgot to run `git push`,
+# then production is running a fork of the tree that isn't shared between
+# developers
+
+
+- [more-you-know.jpg] [fit] [bottom]
+
+<span size="x-large" weight="heavy">Deploy git tags or equiv.</span>
+
+# Deployments should really come from an authoritative source, and be an
+# auditable git tag or equivalent. I should always be able to have a 100%
+# certain picture of what is in production at all times.
+--
+
+
+# I think that's it for me
+
+--
+
+<b>Thanks for listening</b>
+
+# Thanks for listening to me qvetch about some of the bad things I've seen in
+# operations.
+#
+# If you have any complaints, or good anti-patterns, please let me know -->
+
+--
+
+tyler@linux.com
+
+# via email
+
+--
