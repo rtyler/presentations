@@ -275,21 +275,22 @@ You love testing
 -- [font=monospace 50px] [text-align=left] [left]
 
 Feature: Serve the PuppetConf streaming web service
-  In order to serve up the PuppetConf
-  video stream to millions of fans
-
   As a developer
 
-  Web hosts should be configured to run the app
+  I want to provision web hosts to run my application
+
+  In order to serve up the PuppetConf
+  video stream to millions of fans
 
 
 # This is just meta-data at the top of a `.feature` file for Cucumber, it
 # serves no other purpose other than to help inform the reader of the
 # context/goals of the feature
 #
-# In order to serve up the PuppetConf video stream to millions of fans
-# As a developer
-# Web hosts should be configured to run the app
+# This tells me:
+# * who is the stakeholder who wants this work done?
+# * what is the goal for the person trying to deliver it?
+# * why does the stakeholder want it done?
 #
 # This feels a little janky. With my developer hat on, I really don't care all
 # that mugh about how the application is configured, provisioned, or even run,
@@ -300,12 +301,13 @@ Feature: Serve the PuppetConf streaming web service
 -- [font=monospace 50px] [text-align=left] [left]
 
 Feature: Serve the PuppetConf streaming web service
-  In order to serve up the PuppetConf
-  video stream to millions of fans
-
   As an Operations Engineer
 
-  Web hosts should be configured to run the app
+  I want to provision web hosts to run the
+  streaming app
+
+  In order to serve up the PuppetConf
+  video stream to millions of fans
 
 # I'll add in "As an Operations Engineer" and this reads a little bit better,
 # although this is really just semantics at this point, what this tells me is
@@ -536,10 +538,6 @@ Blimpy
 
 --
 
-<b>Thanks</b>
-
---
-
 <b>Bonus Material!</b>
 
 --
@@ -554,4 +552,7 @@ Blimpy
 --
 
 
+<b>Thanks</b>
+
+--
 
