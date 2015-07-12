@@ -1,0 +1,20 @@
+= JRuby/Gradle Presentation Outline
+
+* Intro
+* Meet jruby-gradle
+** Say hello to Gradle itself
+** Project history/motivation
+* A simple jruby-gradle project
+** Managing dependencies
+** Tooling to bring rubygems dependencies into Gradle (rubygems-servlet
+** Incorporating Java-based dependencies
+** External system requirements (spoiler alert, only the JVM!)
+** Executing Ruby from Gradle
+** Running RSpec, for example
+** Compiling and easily incorporating Java and Ruby code in one build
+* Get advanced
+** Multi-project builds, producing Java, Ruby, and native artifacts from a single build tool
+** Publishing to Rubygems, Maven Central and everywhere in between
+* The future of jruby-gradle
+* Q&A
+

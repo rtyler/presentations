@@ -1,0 +1,80 @@
+buildscript {
+    repositories { jcenter() }
+
+    dependencies {
+        classpath 'org.ysb33r.gradle:vfs-gradle-plugin:1.0-beta1'
+        classpath 'commons-httpclient:commons-httpclient:3.1'
+        classpath "com.github.jruby-gradle:jruby-gradle-plugin:0.3.2"
+        classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.1"
+    }
+}
+
+apply plugin: 'com.github.jruby-gradle.base'
+apply plugin: 'org.ysb33r.vfs'
+apply plugin: 'java'
+apply plugin: "org.asciidoctor.gradle.asciidoctor"
+
+version = '1.0'
+
+ext {
+    downloadDir = new File(buildDir,'download')
+    templateDir = new File(downloadDir,'templates')
+    deckjsDir   = new File(downloadDir,'deck.js')
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    gems 'rubygems:haml:4.0.6'
+}
+
+task download << {
+    mkdir downloadDir
+    vfs {
+        cp "zip:https://github.com/asciidoctor/asciidoctor-backends/archive/${asciidoctorBackendVersion}.zip!asciidoctor-backends-${asciidoctorBackendVersion}",
+                templateDir, recursive:true, overwrite:true
+        cp "zip:https://github.com/imakewebthings/deck.js/archive/${deckjsVersion}.zip!deck.js-${deckjsVersion}",
+                deckjsDir, recursive:true, overwrite:true
+    }
+}
+
+download {
+    description "Download extra deckjs resources"
+    outputs.dir templateDir
+    outputs.dir deckjsDir
+}
+
+asciidoctor {
+    dependsOn jrubyPrepareGems
+
+    sourceDir 'content'
+
+    resources {
+        from (sourceDir) {
+            include 'images/**'
+        }
+        from (downloadDir) {
+            include 'deck.js/**'
+        }
+    }
+
+    backends    'deckjs', 'html5'
+
+    attributes	'build-gradle': file('build.gradle'),
+                'sourcedir': project.sourceSets.main.java.srcDirs[0],
+                'endpoint-url': 'http://jruby-gradle.github.io',
+                'source-highlighter' : 'coderay',
+                'imagesdir':'./images',
+                'toc':'left',
+                'icons': 'font',
+                'setanchors':'true',
+                'idprefix':'',
+                'idseparator':'-',
+                'docinfo1':'true'
+
+    options template_dirs : [new File(templateDir,'haml').absolutePath ]
+
+    dependsOn download
+}

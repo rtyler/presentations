@@ -1,0 +1,79 @@
+= JRuby/Gradle
+R Tyler Croy <tyler@linux.com>
+2015-07-31
+:revnumber: {project-version}
+:example-caption!:
+ifndef::imagesdir[:imagesdir: images]
+ifndef::sourcedir[:sourcedir: ../java]
+:deckjs_transition: fade
+:deckjs_theme: swiss
+:navigation:
+:menu:
+:goto:
+:status:
+:toc:
+
+
+== Presented By
+
+
+About me
+
+
+== Intro to Gradle
+
+About Gradle
+
+== Motivation
+
+The week after JRuby Conf EU 2014, I started the jruby-gradle tooling in
+response to some picnic table conversations with Colin Surprenant who had been
+using a combination of ant, ivy, bundler and rake to accomplish tasks in his
+Java/Ruby project. I've seen people use all sorts of mismashes of tools to
+manage their JRuby projects, and used many of them myself. They've almost all
+been barely supported, uncomfortable hacks.
+
+
+== A simple project
+
+=== Managing dependencies
+
+
+=== Tooling to use gem dependencies
+
+rubygems-servlet code
+
+
+=== Incorporating Java-based dependencies
+
+
+=== External system requirements
+
+Duh, JVM-only
+
+
+=== Executing Ruby from Gradle
+
+JRubyExec
+
+=== Running RSpec
+
+
+=== Hybrid projects
+
+Compiling and incorporating Java and Ruby code into one build
+
+
+== Advanced topics
+
+=== Multi-project builds
+
+Producing Java, Ruby, and native artifacts from a single build tool
+
+=== Publishing gems and java artifacts
+
+
+== Future for JRuby/Gradle
+
+== Q&A
+
