@@ -12,26 +12,32 @@ ifndef::sourcedir[:sourcedir: ../java]
 :goto:
 :status:
 :toc:
+:split:
 
 
 == Presented By
 
-
 About me
-
 
 == Intro to Gradle
 
-About Gradle
+=== Build
+image::gradle.png[Gradle,role="right"]
+
 
 == Motivation
 
-The week after JRuby Conf EU 2014, I started the jruby-gradle tooling in
-response to some picnic table conversations with Colin Surprenant who had been
-using a combination of ant, ivy, bundler and rake to accomplish tasks in his
-Java/Ruby project. I've seen people use all sorts of mismashes of tools to
-manage their JRuby projects, and used many of them myself. They've almost all
-been barely supported, uncomfortable hacks.
+// The week after JRuby Conf EU 2014, I started the jruby-gradle tooling in
+// response to some picnic table conversations with Colin Surprenant who had been
+// using a combination of ant, ivy, bundler and rake to accomplish tasks in his
+// Java/Ruby project. I've seen people use all sorts of mismashes of tools to
+// manage their JRuby projects, and used many of them myself. They've almost all
+// been barely supported, uncomfortable hacks.
+
+This should be the thing
+
+=== Sub bullet?
+
 
 
 == A simple project
