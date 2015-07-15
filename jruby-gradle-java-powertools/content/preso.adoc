@@ -2,30 +2,149 @@
 R Tyler Croy <tyler@linux.com>
 2015-07-31
 :revnumber: {project-version}
-:example-caption!:
+:example-caption!: lolwut
 ifndef::imagesdir[:imagesdir: images]
-ifndef::sourcedir[:sourcedir: ../java]
 :deckjs_transition: fade
 :deckjs_theme: swiss
 :navigation:
 :menu:
 :goto:
 :status:
-:toc:
 :split:
-
+:toc:
 
 == Presented By
 
-About me
+=== Open Source Work
+
+[%step]
+* Founded link:http://jruby-gradle.org[JRuby/Gradle] project
+// Based on picnic-table discussions at JRuby Conf EU in 2014, seeing some of the
+// problems that other developers, myself included, had with building more
+// complex Java and Ruby hybrid applications, I started hacking on a Gradle
+// plugin the week after the conference
+* link:https://jenkins-ci.org[Jenkins CI] project contributor
+* link:https://twitter.com/agentdero[Prolific complainer]
+
+=== Professional Work
+
+image::lookout-icon.png[Lookout, Inc]
+
+// 4 1/2 years at Lookout developing primarily in Ruby. I've shipped production
+// code in Ruby, C and Groovy while at Lookout.
+//
+// Prior to that over 4 years of work with Python.
+
+
+// Before we get into the JRuby side of things, let's talk about the problem at
+// hand
+
+== The Problem
+
+There's a lot more to Java and Ruby integration than `require 'some.jar'`
+
+//The problem that many developers run into when they start to get in deep with
+//JRuby is: I can integration Java and Ruby code! Great! I want to do that in a
+//real project!
+
+=== Facets of the problem
+
+[%step]
+* Native Java dpeendency resolution
+// I have a jar that dependends on two jars, which each depend on three other
+// jars, I guess I'll just copy everything into my git tree!
+* Cross-ecosystem dependencies
+// I have a gem that depends on some Java library being installed, how does that
+// even work?
+* Cross-ecosystem builds
+// I've got some custom Java code that I wrote, that I want to use in my Ruby
+// project. How the hell does this work?
+
+== Previous Approaches
+
+[%step]
+* Shell out to `$BUILD_TOOL`
+// I've seen lots of projectskkshell out from Rake to another build tool, like
+// Maven, in order to fetch some Java dependencies that the build needs. This is
+// problematic for two reasons, one being that your dependencies are declared in
+// two places with no clear interaction between the two. Secondly, Rake as a
+// task-execution tool, has no internal notion of dependencies needed for any
+// particular tasks
+//
+// In the case of a project like redstorm, previously it used Ivy and Ant for
+// the Java side of the house, and then Bundler and Rake for the Ruby side.
+* link:https://github.com/mkristian/ruby-maven[Ruby Maven]
+// I'm not terribly familiar with Ruby Maven, it's one of the many tools that
+// Christian Meier has built to help address the problems inherent in making Ruby
+// and Java ecosystems play way together
+* link:https://github.com/mkristian/jbundler[jbundler]
+// Another tool from Christian, one which I've personally had the most previous
+// success with. jbundler builds on top of bundler to provide Java-based dependency
+// management and resolution for native Java dependencies. underneath the hood it
+// does use Maven for this, but from the user viewpoint that's merely an
+// implementation detail
+
+
+// So what's interesting/special about Gradle?
 
 == Intro to Gradle
 
-=== Build
-image::gradle.png[Gradle,role="right"]
+Gradle is a multilanguage, i.e. polyglot, build tool native to the JVM. It's
+comparable to Maven but where it succeeds and Maven tends to fall short is in
+easy extensibility.
+
+One of the more compelling, but not immediately noticed, features of Gradle is
+that it allows for self-describing build files. In effect, I can implement my
+build files to enumerate the dependencies that the build file needs to execute!
+
+Aside from a JDK, there should almost never be unspecified dependencies or
+configuration outside of a Gradle file.
+
+
+image:gradle.png[Gradle]
+
 
 
 == Motivation
+
+
+[quote, Me]
+____
+I'm tired of hacking together a bunch of tools.
+____
+
+=== Important features
+
+[%step]
+* Java (`.jar`) and Ruby (`.gem`) dependency management
+* Dependency and task management integration
+// I don't want to have one big flat list of dependencies that have to be installed
+// before I can do any work whatsoever. If running some task requires a dependency,
+// then it should be fetched/installed when I need that dependency
+* Extendable
+* Easy to manage and publish extensions
+
+==== Nice to haves
+
+* Self-describing/contained
+// Being able to self-contain as much as possible in the source tree makes the
+// burden of ramping up on the project that much smaller. Asking a casual
+// contributor to install RVM, then compile a specific version of Ruby just to test
+// a patch locally is a pretty big hurdle
+* Ecosystem of tools already present
+// While not strictly a requirement, it's always nice to choose a tool that has
+// lots of existing integrations and other extension points. In the case of
+// Gradle there's already plenty of IDE integrations and a very rich plugin
+// community already present
+
+
+== JRuby/Gradle
+
+[quote, Me]
+____
+The best thing.
+____
+
 
 // The week after JRuby Conf EU 2014, I started the jruby-gradle tooling in
 // response to some picnic table conversations with Colin Surprenant who had been
@@ -34,11 +153,50 @@ image::gradle.png[Gradle,role="right"]
 // manage their JRuby projects, and used many of them myself. They've almost all
 // been barely supported, uncomfortable hacks.
 
-This should be the thing
 
-=== Sub bullet?
+== Base
+
+=== Features
+
+* Fundamental Ruby dependency management
+* `JRubyExec` task definition
+* `GeneratedGradleRb` task definition
+
+== Jar
+
+* Support creation of:
+** Library-type JRuby jars
+** Self-contained executable jars
+*** With default entry point: `java -jar my.jar -S irb`
+*** With custom entry point: `java -jar my.jar --custom-opts=foo`
+
+== War
+
+NOTE: Still experimental
+
+* Prepare a JRuby-based `.war` archive for deployment into servlet containers
+
+== Storm
+
+* Prepare an link:http://storm.apache.org[Apache Storm] topology `.jar`
+* `JRubyStormLocal` task for local topology
+
+== Test
+
+NOTE: Still in development
+
+* Expose Ruby test tools via Gradle
+** `rspec { }` DSL
+** `cucumber { }` DSL
+
+== Rake
+
+NOTE: Still Experimental
+
+* Expose and proxy  Rake tasks thorugh the Gradle task interface
 
 
+== Neat
 
 == A simple project
 
