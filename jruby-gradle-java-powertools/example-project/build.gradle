@@ -5,11 +5,13 @@ buildscript {
 
     dependencies {
         classpath 'com.github.jruby-gradle:jruby-gradle-plugin:0.4.0'
+        classpath 'com.github.jruby-gradle:jruby-gradle-jar-plugin:0.4.0'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'com.github.jruby-gradle.base'
+apply plugin: 'com.github.jruby-gradle.jar'
 import com.github.jrubygradle.JRubyExec
 
 dependencies {
@@ -27,3 +29,13 @@ task spec(type: JRubyExec) {
 }
 /* let's make our top-level check task run RSpec too */
 check.dependsOn spec
+
+jrubyJar {
+    from sourceSets.main.output
+    initScript 'main.rb'
+}
+assemble.dependsOn check
+assemble.dependsOn jrubyJar
+
+/* cute hack to disable packaging our java up as a library-type jar */
+jar.enabled = false
