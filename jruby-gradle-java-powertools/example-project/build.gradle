@@ -1,0 +1,25 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jruby-gradle:jruby-gradle-plugin:0.4.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.jruby-gradle.base'
+import com.github.jrubygradle.JRubyExec
+
+dependencies {
+    jrubyExec 'rubygems:rspec:2.99.0+'
+}
+
+task spec(type: JRubyExec) {
+    group 'Verification'
+    description 'Run the RSpecs for this project'
+    jrubyArgs '-S'
+    script 'rspec'
+    scriptArgs '--order', 'random', '--color'
+}
