@@ -19,7 +19,11 @@ dependencies {
 task spec(type: JRubyExec) {
     group 'Verification'
     description 'Run the RSpecs for this project'
+    dependsOn classes
+    classpath sourceSets.main.runtimeClasspath
     jrubyArgs '-S'
     script 'rspec'
     scriptArgs '--order', 'random', '--color'
 }
+/* let's make our top-level check task run RSpec too */
+check.dependsOn spec
