@@ -55,7 +55,7 @@ download {
 }
 
 asciidoctor {
-    dependsOn download, jrubyPrepare
+    dependsOn download, jrubyPrepare, assemble
 
     sourceDir 'content'
 
