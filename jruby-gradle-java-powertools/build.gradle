@@ -13,6 +13,7 @@ apply plugin: 'com.github.jruby-gradle.base'
 apply plugin: 'org.ysb33r.vfs'
 apply plugin: 'java'
 apply plugin: "org.asciidoctor.gradle.asciidoctor"
+defaultTasks 'asciidoctor'
 
 version = '1.0'
 
@@ -33,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    gems 'rubygems:haml:4.0.6'
+    gems 'rubygems:haml:4.0.6' // <1>
 }
 
 task download << {
@@ -55,9 +56,10 @@ download {
 }
 
 asciidoctor {
-    dependsOn download, jrubyPrepare, assemble
-
+    dependsOn download, jrubyPrepare, assemble // <1>
     sourceDir 'content'
+    backends    'deckjs', 'html5' // <2>
+
 
     resources {
         from (sourceDir) {
@@ -68,11 +70,8 @@ asciidoctor {
         }
     }
 
-    backends    'deckjs', 'html5'
-
-    attributes	'build-gradle': file('build.gradle'),
+    attributes  'build-gradle': file('build.gradle'),
                 'sourcedir': project.sourceSets.main.java.srcDirs[0],
-                'endpoint-url': 'http://jruby-gradle.github.io',
                 'source-highlighter' : 'coderay',
                 'imagesdir':'./images',
                 'toc':'left',

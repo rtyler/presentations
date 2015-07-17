@@ -2,7 +2,6 @@
 R Tyler Croy <tyler@linux.com>
 2015-07-31
 :revnumber: {project-version}
-:example-caption!: lolwut
 ifndef::imagesdir[:imagesdir: images]
 :deckjs_transition: fade
 :deckjs_theme: swiss
@@ -18,13 +17,13 @@ ifndef::imagesdir[:imagesdir: images]
 === Open Source Work
 
 [%step]
-* Founded link:http://jruby-gradle.org[JRuby/Gradle] project
+* Founded link::http://jruby-gradle.org[JRuby/Gradle] project
 // Based on picnic-table discussions at JRuby Conf EU in 2014, seeing some of the
 // problems that other developers, myself included, had with building more
 // complex Java and Ruby hybrid applications, I started hacking on a Gradle
 // plugin the week after the conference
-* link:https://jenkins-ci.org[Jenkins CI] project contributor
-* link:https://twitter.com/agentdero[Prolific complainer]
+* link::https://jenkins-ci.org[Jenkins CI] project contributor
+* link::https://twitter.com/agentdero[Prolific complainer]
 
 === Professional Work
 
@@ -47,7 +46,7 @@ There's a lot more to Java and Ruby integration than `require 'some.jar'`
 //JRuby is: I can integration Java and Ruby code! Great! I want to do that in a
 //real project!
 
-=== Facets of the problem
+=== More Specifically
 
 [%step]
 * Native Java dpeendency resolution
@@ -73,11 +72,11 @@ There's a lot more to Java and Ruby integration than `require 'some.jar'`
 //
 // In the case of a project like redstorm, previously it used Ivy and Ant for
 // the Java side of the house, and then Bundler and Rake for the Ruby side.
-* link:https://github.com/mkristian/ruby-maven[Ruby Maven]
+* link::https://github.com/mkristian/ruby-maven[Ruby Maven]
 // I'm not terribly familiar with Ruby Maven, it's one of the many tools that
 // Christian Meier has built to help address the problems inherent in making Ruby
 // and Java ecosystems play way together
-* link:https://github.com/mkristian/jbundler[jbundler]
+* link::https://github.com/mkristian/jbundler[jbundler]
 // Another tool from Christian, one which I've personally had the most previous
 // success with. jbundler builds on top of bundler to provide Java-based dependency
 // management and resolution for native Java dependencies. underneath the hood it
@@ -89,16 +88,25 @@ There's a lot more to Java and Ruby integration than `require 'some.jar'`
 
 == Intro to Gradle
 
-Gradle is a multilanguage, i.e. polyglot, build tool native to the JVM. It's
-comparable to Maven but where it succeeds and Maven tends to fall short is in
-easy extensibility.
+Gradle is a multilanguage build tool native to the JVM.
 
-One of the more compelling, but not immediately noticed, features of Gradle is
-that it allows for self-describing build files. In effect, I can implement my
-build files to enumerate the dependencies that the build file needs to execute!
+[%step]
+* Manages:
+** code dependencies
+** buildscript dependencies
+** task dependencies
+* self-describing
 
-Aside from a JDK, there should almost never be unspecified dependencies or
-configuration outside of a Gradle file.
+// It's
+// comparable to Maven but where it succeeds and Maven tends to fall short is in
+// easy extensibility.
+//
+// One of the more compelling, but not immediately noticed, features of Gradle is
+// that it allows for self-describing build files. In effect, I can implement my
+// build files to enumerate the dependencies that the build file needs to execute!
+//
+// Aside from a JDK, there should almost never be unspecified dependencies or
+// configuration outside of a Gradle file.
 
 
 image:gradle.png[Gradle]
@@ -110,7 +118,7 @@ image:gradle.png[Gradle]
 
 [quote, Me]
 ____
-I'm tired of hacking together a bunch of tools.
+I'm tired of hacking together a bunch of so-so tools.
 ____
 
 === Important features
@@ -126,7 +134,7 @@ ____
 
 ==== Nice to haves
 
-* Self-describing/contained
+* Self-contained
 // Being able to self-contain as much as possible in the source tree makes the
 // burden of ramping up on the project that much smaller. Asking a casual
 // contributor to install RVM, then compile a specific version of Ruby just to test
@@ -198,34 +206,199 @@ NOTE: Still Experimental
 
 == Neat
 
-== A simple project
-
-=== Managing dependencies
+image::jruby-duke.jpg[]
 
 
-=== Tooling to use gem dependencies
-
-rubygems-servlet code
+== This presentation
 
 
-=== Incorporating Java-based dependencies
+== External system requirements
 
 
-=== External system requirements
+* Java
 
-Duh, JVM-only
+----
+% git clone git://github.com/rtyler/presentations.git
+% cd presentations/jruby-gradle-java-powertools
+% ./gradlew
+----
+
+== Using a Gradle plugin or two
+
+[source,gradle]
+----
+include::../build.gradle[lines=1..15]
+----
+
+== Depending on Ruby gems
 
 
-=== Executing Ruby from Gradle
+[source, gradle]
+----
+include::../build.gradle[lines=35..37]
+----
+<1> Declaring a Ruby gem dependency
 
-JRubyExec
 
-=== Running RSpec
+== Tying it together
+
+[source, gradle]
+----
+include::../build.gradle[lines=57..86]
+----
+<1> Task dependencies
+<2> Invoking a custom backend, with Ruby!
+
+== Demo!
+
+[%step]
+* I want to write Ruby code
+* And Ruby tests
+* And Java code
+* And I want to ues Ruby gems
+* And I want to use Java jars
+* And I want to still like writing code at the end of it
 
 
-=== Hybrid projects
+== Granular dependency management
+
+[source, gradle]
+----
+
+configurations {
+    rspec
+}
+
+dependencies {
+    gems 'rubygems:haml:4.0.6'
+
+    rspec 'rubygems:rspec:2.99.0'
+}
+----
+
+== Resolving Gem dependencies
+
+
+Gradle doesn't support the Ruby gem repositoriy format *yet*, so the only way to
+get dependency resolution is to use a format that Gradle already understands.
+Maven!
+
+link:https://github.com/torquebox/rubygems-servlets[rubygems-servlets]
+
+[source,xml]
+----
+include::maven-metadata.xml[lines=1..20]
+----
+
+
+== Incorporating Java-based dependencies
+
+(pssst, it's the same)
+
+[source,gradle]
+----
+dependencies {
+    rspec 'org.apache.storm:storm-core:0.9.5'
+}
+----
+
+
+
+== Executing Ruby from Gradle
+
+[source, gradle]
+----
+include::../example-project/build.gradle[lines=21..31]
+----
+<1> Express task dependency, only execute after `classes` completes
+<2> Use a custom classpath to pull in Java classes
+<3> Special execution flag to trigger exec-like behavior (should go away)
+<4> Name of the Ruby binscript
+<5> Arguments for the Ruby binscript
+
+
+<<<<
+
+----
+➜  example-project git:(master) ✗ tree -L 2 build/tmp/jrubyExec
+build/tmp/jrubyExec # <1>
+├── bin
+│   ├── autospec
+│   ├── htmldiff
+│   ├── ldiff
+│   └── rspec  # <2>
+├── build_info
+├── cache
+│   ├── diff-lcs-1.2.5.gem
+│   ├── rspec-2.99.0.gem
+│   ├── rspec-core-2.99.2.gem
+│   ├── rspec-expectations-2.99.2.gem
+│   └── rspec-mocks-2.99.4.gem
+├── doc
+├── extensions
+├── gems
+│   ├── diff-lcs-1.2.5
+│   ├── rspec-2.99.0 # <3>
+│   ├── rspec-core-2.99.2
+│   ├── rspec-expectations-2.99.2
+│   └── rspec-mocks-2.99.4
+├── Jars.lock
+└── specifications
+    ├── diff-lcs-1.2.5.gemspec
+    ├── rspec-2.99.0.gemspec
+    ├── rspec-core-2.99.2.gemspec
+    ├── rspec-expectations-2.99.2.gemspec
+    └── rspec-mocks-2.99.4.gemspec
+----
+<1> Temporary `GEM_HOME` directory
+<2> RSpec binstub
+<3> RSpec gem source code
+
+
+== Hybrid projects
 
 Compiling and incorporating Java and Ruby code into one build
+
+<<<<
+
+.Demo.java
+[source,java]
+----
+include::../example-project/src/main/java/com/github/rtyler/presentations/Demo.java[]
+----
+
+
+<<<<
+
+.main.rb
+[source,ruby]
+----
+include::../example-project/main.rb[]
+----
+
+<<<<
+
+[source, gradle]
+----
+include::../example-project/build.gradle[lines=12..14]
+----
+
+[source, gradle]
+----
+include::../example-project/build.gradle[lines=33..39]
+----
+
+<<<<
+
+----
+➜  libs git:(master) ✗ java -jar example-project-jruby.jar
+> Running with Ruby: 1.9.3 on java
+> sending echo message:  Hello JRubyConf EU
+
+echoing "Hello JRubyConf EU"
+➜  libs git:(master) ✗
+----
+
 
 
 == Advanced topics
