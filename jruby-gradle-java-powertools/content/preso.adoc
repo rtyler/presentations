@@ -248,7 +248,7 @@ link::https://github.com/rtyler/presentations/tree/master/jruby-gradle-java-powe
 
 ----
 % git clone git://github.com/rtyler/presentations.git
-% cd presentations/jruby-gradle-java-powertools/example-project
+% cd presentations/jruby-gradle-java-powertools
 % ./gradlew
 ----
 
