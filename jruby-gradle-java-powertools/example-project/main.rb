@@ -1,3 +1,4 @@
+require 'colorize'
 require 'java'
 
 java_import 'com.github.rtyler.presentations.Demo'
@@ -9,4 +10,4 @@ message = "Hello JRubyConf EU"
 puts "> sending echo message:  #{message}"
 puts
 
-puts Demo.new.echo(message)
+puts Demo.new.echo(message).green

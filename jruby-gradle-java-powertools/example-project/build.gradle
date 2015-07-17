@@ -14,8 +14,14 @@ apply plugin: 'com.github.jruby-gradle.base'
 apply plugin: 'com.github.jruby-gradle.jar'
 import com.github.jrubygradle.JRubyExec
 
+configurations {
+    compile.extendsFrom jrubyJar
+}
+
 dependencies {
-    jrubyExec 'rubygems:rspec:2.99.0+'
+    jrubyExec 'rubygems:rspec:2.99.0+' // <1>
+    gems 'rubygems:colorize:0.7.7' // <2>
+    jrubyJar 'org.slf4j:slf4j-simple:1.7.12' // <3>
 }
 
 task spec(type: JRubyExec) {
@@ -33,6 +39,9 @@ check.dependsOn spec
 jrubyJar {
     from sourceSets.main.output // <1>
     initScript 'main.rb' // <2>
+    defaultGems() // <3>
+    /* no sense building a jar without passing tests */
+    dependsOn spec
 }
 assemble.dependsOn check
 assemble.dependsOn jrubyJar

@@ -90,7 +90,6 @@ There's a lot more to Java and Ruby integration than `require 'some.jar'`
 
 Gradle is a multilanguage build tool native to the JVM.
 
-[%step]
 * Manages:
 ** code dependencies
 ** buildscript dependencies
@@ -212,18 +211,10 @@ image::jruby-duke.jpg[]
 == This presentation
 
 
-== External system requirements
+Uses Gradle! (of course)
 
 
-* Java
-
-----
-% git clone git://github.com/rtyler/presentations.git
-% cd presentations/jruby-gradle-java-powertools
-% ./gradlew
-----
-
-== Using a Gradle plugin or two
+== A Gradle plugin or two
 
 [source,gradle]
 ----
@@ -235,7 +226,7 @@ include::../build.gradle[lines=1..15]
 
 [source, gradle]
 ----
-include::../build.gradle[lines=35..37]
+include::../build.gradle[lines=35..38]
 ----
 <1> Declaring a Ruby gem dependency
 
@@ -251,6 +242,16 @@ include::../build.gradle[lines=57..86]
 
 == Demo!
 
+=== Follow along
+
+link::https://github.com/rtyler/presentations/tree/master/jruby-gradle-java-powertools/example-project[github.com/rtyler/presentations]
+
+----
+% git clone git://github.com/rtyler/presentations.git
+% cd presentations/jruby-gradle-java-powertools/example-project
+% ./gradlew
+----
+
 [%step]
 * I want to write Ruby code
 * And Ruby tests
@@ -264,17 +265,11 @@ include::../build.gradle[lines=57..86]
 
 [source, gradle]
 ----
-
-configurations {
-    rspec
-}
-
-dependencies {
-    gems 'rubygems:haml:4.0.6'
-
-    rspec 'rubygems:rspec:2.99.0'
-}
+include::../example-project/build.gradle[lines=17..25]
 ----
+<1> Depend on RSpec for executing our Ruby tests
+<2> Put the colorize gem in the "gems" configuration (default)
+<3> Incorporate a Java dependency, a logging tool
 
 == Resolving Gem dependencies
 
@@ -291,24 +286,12 @@ include::maven-metadata.xml[lines=1..20]
 ----
 
 
-== Incorporating Java-based dependencies
-
-(pssst, it's the same)
-
-[source,gradle]
-----
-dependencies {
-    rspec 'org.apache.storm:storm-core:0.9.5'
-}
-----
-
-
 
 == Executing Ruby from Gradle
 
 [source, gradle]
 ----
-include::../example-project/build.gradle[lines=21..31]
+include::../example-project/build.gradle[lines=26..36]
 ----
 <1> Express task dependency, only execute after `classes` completes
 <2> Use a custom classpath to pull in Java classes
@@ -385,32 +368,65 @@ include::../example-project/build.gradle[lines=12..14]
 
 [source, gradle]
 ----
-include::../example-project/build.gradle[lines=33..39]
+include::../example-project/build.gradle[lines=38..43]
 ----
+<1> Including the compiled classes from the "main" source set
+<2> Setting a custom, Ruby-based, entry point. Thanks to
+link::https://github.com/mkristian/jruby-mains[jruby-mains]
+<3>  Include the gems in the default `gems` configuration
+
 
 <<<<
 
 ----
-➜  libs git:(master) ✗ java -jar example-project-jruby.jar
+➜  jruby-gradle-java-powertools git:(master) ✗ java -jar example-project/build/libs/example-project-jruby.jar
 > Running with Ruby: 1.9.3 on java
 > sending echo message:  Hello JRubyConf EU
 
+[main] INFO Demo-Log - logging a message
 echoing "Hello JRubyConf EU"
-➜  libs git:(master) ✗
+➜  jruby-gradle-java-powertools git:(master) ✗ 
 ----
 
+<<<<
+
+image::execution-jrubyjar.png[]
+
+
+.main.rb
+[source,ruby]
+----
+include::../example-project/main.rb[]
+----
 
 
 == Advanced topics
 
 === Multi-project builds
 
-Producing Java, Ruby, and native artifacts from a single build tool
+Multi-project builds are a native feature to Gradle and a very useful way to tie
+together multiple sub-projects.
+
+At Lookout, we have the need to produce Java-based jars, Ruby gems and a service
+all from one source tree.
 
 === Publishing gems and java artifacts
 
 
 == Future for JRuby/Gradle
+
+* Test plugin
+// The jruby-gradle-test plugin should make it easy for most developers to work
+// with a fully Gradlized project seamlessly without needing to care too much
+// about how the build happens or is executing
+* IDE integration
+// IntelliJ's Ruby plugin offers some great edebugging options, but it is
+// unfortunately heavily tied into RVM. Since IntelliJ works just fine with
+// Gradle, there's work that needs to be done to bridge that gap in
+// functionality
+* Deeper integration with the Gradle ecosystem
+// More conventional configuration, reusing concepts like configurations and
+// some of the publisher code more deeply, etc.
 
 == Q&A
 

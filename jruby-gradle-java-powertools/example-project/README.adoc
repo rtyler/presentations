@@ -1,0 +1,7 @@
+= JRuby/Gradle Example Project
+
+
+This project is an example of a hybrid, Java + Ruby, application that exercises
+functionality which is part of the link::http://jruby-gradle.org[JRuby/Gradle]
+tool chain.
+
