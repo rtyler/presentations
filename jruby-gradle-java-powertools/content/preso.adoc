@@ -49,7 +49,7 @@ There's a lot more to Java and Ruby integration than `require 'some.jar'`
 === More Specifically
 
 [%step]
-* Native Java dpeendency resolution
+* Native Java dependency resolution
 // I have a jar that dependends on two jars, which each depend on three other
 // jars, I guess I'll just copy everything into my git tree!
 * Cross-ecosystem dependencies
@@ -274,7 +274,7 @@ include::../example-project/build.gradle[lines=17..25]
 == Resolving Gem dependencies
 
 
-Gradle doesn't support the Ruby gem repositoriy format *yet*, so the only way to
+Gradle doesn't support the Ruby gem repository format *yet*, so the only way to
 get dependency resolution is to use a format that Gradle already understands.
 Maven!
 
