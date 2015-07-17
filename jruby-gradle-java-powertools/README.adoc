@@ -1,0 +1,13 @@
+= JRuby/Gradle - Bringing Java powertools to Ruby
+
+This is an link::http://asciidoctor.org[Asciidoctor] powered presentation about
+the link::http://jruby-gradle.org[JRuby/Gradle] toolchain
+
+
+=== Building the presentation
+
+----
+% ./gradlew
+----
+
+The presentation will be generated in: `build/asciidoc/deckjs/preso.html`
