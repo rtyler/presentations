@@ -1,0 +1,247 @@
+= Ruby Tools
+R Tyler Croy <rtyler.croy@lookout.com>
+2015-07-23
+:revnumber: {project-version}
+:deckjs_transition: fade
+:deckjs_theme: swiss
+:navigation:
+:menu:
+:goto:
+:status:
+:split:
+
+== Rubies
+
+== MRI
+
+Also known as "Matz's Ruby Interpreter"
+
+The reference implementation of the Ruby language
+
+* **Pros**
+** Fast startup time
+** Most commonly targeted by library developers
+** Native code interface for C ABI interop. (aka native extensions)
+** Packages on most OSes
+* **Cons**
+** Global VM Lock
+*** **One** system thread executing Ruby code at once
+*** Concurrent, but not parallel
+** Native extensions mean C code in ruby gems
+
+
+== Rubinius
+
+Ruby VM and runtime implemented primarily with Ruby
+
+* **Pros**
+** Fast startup time
+** Easy debuggability of runtime, "it's just Ruby"
+** No Global VM Lock; concurrent and parallel
+* **Cons**
+** Poor adoption/support in broader Ruby community
+** Political disputes between Rubinius and other VM implementers resulting in
+   potential language spec divergeance.
+
+== JRuby
+
+Tyler's favorite Ruby implementation, Ruby implemented on top of the Java Virtual Machine
+
+* **Pros**
+** Full interop with code from any other JVM-based language (Scala, Clojure, Groovy, Java)
+** Performance increases in JVM execution speed apply to JRuby
+** No Global VM Lock; concurrent and parallel
+** Supported by corporate sponsorship (Redhat)
+** Ruby language features supported on a longer timeframe (e.g. MRI 1.9.3 EoL Feb 2015, JRuby 1.9.3 not yet EoL)
+* **Cons**
+** Slow startup time due to JVM startup time + Ruby interpretation
+** Incompatibilities with MRI-specific gems with native extensions
+** Generally lags behind reference Ruby language implementation
+** Poor "Ruby native" debugger support
+
+
+== Ruby Ecosystem Basics
+
+== Rubygems
+
+* link:http://rubygems.org[rubygems.org]: Community supported repository of publicly reusable Ruby gems (libraries)
+* Uses a custom repository format and APIs
+* Most Ruby tools (e.g. `gem` CLI) default to interfacing with `rubygems.org`
+
+== RVM
+
+Ruby version manager.
+
+* Enormous set of bash scripts for installing and using Ruby versions in and
+  out of a unix shell environment
+* Modifies `GEM_HOME`, `GEM_PATH` and `PATH` environment variables
+* Wraps a number of common commands (e`g` `gem`, `bundle`)
+* Supports "gemsets" for isolating different installations of Rubygems
+
+
+== Bundler
+
+* Most commonly used dependency management tool
+* Supports:
+**  "groups" of gem dependency enumerations
+** Version ranges (`"~> 0.3.1"`) and pinning (`Gemfile.lock`)
+** `bundle gem` command generates a conventional Ruby gem project structure
+
+
+== Rake
+
+* Most commonly used task management tool
+* Many gems (e.g. `bundler` or `rspec`) provide Rake tasks for common functions
+  (e.g. "packaging a gem")
+
+
+== Travis CI
+
+* Open-source Continuous Integration service
+* Used outside of Ruby ecosystem as well
+
+
+== JRuby Ecosystem Addons
+
+=== jbundler
+
+* Extension onto Bundler for resolving JVM-centric dependencies (e.g.
+  Maven-based dependencies)
+* Similar to `Gemfile.lock` generates `Jarfile.lock` with pinned versions
+* Defaults to accessing jars from link:http://central.maven.org[Maven Central]
+* Authored by link:https://github.com/mkristian[Christian Meier]
+
+=== jar-dependencies
+
+* Gem for expressing JVM-centric dependencies for a Ruby gem
+* Solves the problem of expressing non-Ruby gem transitive dependencies
+* "Just works" with jbundler and JRuby/Gradle (e.g.
+  link:https://github.com/lookout/hermann[Hermann] gem)
+* Authored by link:https://github.com/mkristian[Christian Meier]
+
+=== warbler
+
+* Ruby gem for building a `.war` or `.jar` from Ruby sources
+* Implicit integration with Bundler
+* Auto-detects project type based on `.gemspec` or `config.ru` presence
+
+== JRuby/Gradle
+
+* Toolchain for unifying Ruby/Java task and dependency management via Gradle
+* Supports expressing Ruby gem and JVM-centric dependencies in one place
+* Builds on top of existing Gradle plugins/infrastructure
+* Makes usage of bundler/rake/rvm/warbler/jbundler in a JRuby project
+  unnecessary
+
+
+== Ruby Web Frameworks
+
+=== Sinatra
+
+Bare-bones "routes" DSL and request routing API on top of Rack
+
+=== Rails
+
+Everything and the kitchen sink.
+
+* Originally designed for making building CRUD applications easy
+* Deeply opinionated MVC design, much "just works" by a "convention over
+  configuration" philosophy
+
+
+== Ruby Web Servers
+
+=== Rack
+
+Implementation of a common Ruby web server interface. Closely related to "WSGI"
+from the Python ecosystem.
+
+* Supports "middleware" for injecting code into request/response path
+* Supported by every Ruby-based webserver in use
+* link:https://github.com/jruby/jruby-rack[jruby-rack] project binds Rack
+  interface into the Java Servlet Container interface
+
+=== Puma
+
+Multi-threaded Rack server supporting MRI/JRuby
+
+* High performance/tunable
+* Embeddable
+
+=== Unicorn
+
+Single-threaded Rack server primarily targeting MRI
+
+* Relies on commonly implemented "multi process" parallelism model in MRI
+* In heavy use at GitHub
+
+=== Passenger
+
+Multi-process multi-threaded non-Rack and Rack compatible server.
+
+* Commonly deployed with Apache or Nginx
+
+
+== Ruby Test Tooling
+
+=== RSpec
+
+Expressive testing DSL
+
+* Primarily used for unit-level testing, but adaptable to more
+  feature/acceptance oriented testing
+* Supports:
+** user defined extensions to DSL ("custom matchers")
+** Assertion reusability ("shared examples")
+
+=== Cucumber
+
+"Behavior Driven Development" testing tool, generally used in conjunction with
+RSpec for describing behaviors in user-story like "features"
+
+* Gherkin syntax ("Given/When/Then") ported to Java and JavaScript
+* Suggest "product owner readable" features as a communication mechanism for
+  requirements of an application
+* Very useful for generation customer facing (e.g. REST) API documentation
+
+=== Test::Unit
+
+Unit testing library, defaulted in Rails. Follows more traditional xUnit
+interface/model
+
+
+== Ruby Debugging
+
+* link:http://pryrb.com[Pry] - immensely useful REPL
+* Use the debugger! (1.8.7 => `ruby-debug`, 1.9.x => `debugger`, 2.x =>
+  `byebug`)
+
+== Documentation
+
+* `rvm docs generate all` and `ri` command line tool
+
+----
+➜  ~  ri Array.pop
+= Array.pop
+
+(from ruby site)
+------------------------------------------------------------------------------
+  ary.pop    -> obj or nil
+  ary.pop(n) -> new_ary
+
+------------------------------------------------------------------------------
+
+Removes the last element from self and returns it, or nil if the array is
+empty.
+
+If a number n is given, returns an array of the last n elements (or less) just
+like array.slice!(-n, n) does. See also Array#push for the opposite effect.
+
+  a = [ "a", "b", "c", "d" ]
+  a.pop     #=> "d"
+  a.pop(2)  #=> ["b", "c"]
+  a         #=> ["a"]
+----
+
+
+* Write your own with link:http://yardoc.org/[YARDoc]

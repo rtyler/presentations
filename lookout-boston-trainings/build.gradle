@@ -1,0 +1,85 @@
+buildscript {
+    repositories { jcenter() }
+
+    dependencies {
+        classpath 'org.ysb33r.gradle:vfs-gradle-plugin:1.0-beta1'
+        classpath 'commons-httpclient:commons-httpclient:3.1'
+        classpath "com.github.jruby-gradle:jruby-gradle-plugin:0.4.0"
+        classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.1"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.jruby-gradle.base'
+apply plugin: 'org.ysb33r.vfs'
+apply plugin: "org.asciidoctor.gradle.asciidoctor"
+
+defaultTasks 'assemble', 'asciidoctor'
+version = '1.0'
+
+ext {
+    downloadDir = new File(buildDir,'download')
+    templateDir = new File(downloadDir,'templates')
+    deckjsDir   = new File(downloadDir,'deck.js')
+}
+
+jruby.defaultRepositories = false
+
+repositories {
+    jcenter()
+
+    maven {
+        url "http://rubygems.lasagna.io/proxy/maven/releases"
+    }
+}
+
+dependencies {
+    gems 'rubygems:haml:4.0.6' // <1>
+}
+
+task download << {
+    mkdir downloadDir
+    vfs {
+        cp "zip:https://github.com/asciidoctor/asciidoctor-deck.js/archive/${asciidoctorBackendVersion}.zip!asciidoctor-deck.js-${asciidoctorBackendVersion}/templates",
+                templateDir, recursive:true, overwrite:true
+        cp "zip:https://github.com/imakewebthings/deck.js/archive/${deckjsVersion}.zip!deck.js-${deckjsVersion}",
+                deckjsDir, recursive:true, overwrite:true
+        cp "zip:https://github.com/houqp/deck.split.js/archive/master.zip!deck.split.js-master",
+                new File(deckjsDir.absolutePath, 'extensions/split'), recursive:true, overwrite:true
+    }
+}
+
+download {
+    description "Download extra deckjs resources"
+    outputs.dir templateDir
+    outputs.dir deckjsDir
+}
+
+asciidoctor {
+    dependsOn download, jrubyPrepare, assemble // <1>
+    sourceDir 'content'
+    backends    'deckjs', 'html5' // <2>
+
+
+    resources {
+        from (sourceDir) {
+            include 'images/**'
+        }
+        from (downloadDir) {
+            include 'deck.js/**'
+        }
+    }
+
+    attributes  'build-gradle': file('build.gradle'),
+                'sourcedir': project.sourceSets.main.java.srcDirs[0],
+                'source-highlighter' : 'coderay',
+                'imagesdir':'./images',
+                'toc':'left',
+                'icons': 'font',
+                'setanchors':'true',
+                'idprefix':'',
+                'idseparator':'-',
+                'docinfo1':'true'
+
+    options template_dirs : [new File(templateDir,'haml').absolutePath ]
+}

@@ -1,0 +1,129 @@
+= Storm Overview
+R Tyler Croy <rtyler.croy@lookout.com>
+2015-07-23
+:revnumber: {project-version}
+:deckjs_transition: fade
+:deckjs_theme: swiss
+:navigation:
+:menu:
+:goto:
+:status:
+:split:
+
+
+== Storm Platform
+
+* link:http://storm.apache.org[storm.apache.org]
+* Distributed execution environment
+* A framework for building "message stream processing applicatoins"
+* Java/Clojure native
+
+=== Nimbus
+
+* Coordinator of topology destribution across cluster
+* Tracks metrics, etc
+
+=== Supervisor
+
+* Actually responsible for "work"
+
+
+== Parallel Execution Model
+
+* link:http://storm.apache.org/documentation/Understanding-the-parallelism-of-a-Storm-topology.html[upstream docs]
+* Supervisor Node => Worker (processes) => Executors (threads) => Task (work unit)
+
+== Topology Concepts
+
+=== Tuples
+
+container of data, very simple
+
+=== Spouts
+
+Block of code that is responsible for "emitting" tuples
+
+=== Bolts
+
+Block of code that is responsible for consuming tuples which have been emitted.
+
+* Can ack or fail a tuple, stopping execution
+* Can emit the tuple, delegating processing on that tuple further along
+
+== Redstorm
+
+JRuby integration with Storm
+
+* Provides a `ScriptingContainer` within the Storm execution environment to
+  execute Ruby code
+* Provides optional DSL for describing topologies, spouts, bolts
+
+
+== Topology.rb
+
+[source, ruby]
+----
+class SomeTopology < RedStorm::DSL::Topology
+  spout_config = SpoutConfig.new(
+    ZkHosts.new(configatron.kafka.zookeeper_hosts, configatron.kafka.zookeeper_broker_path),
+      configatron.some_topology.kafka_topic,       # topic to read from
+      configatron.some_topology.kafka_offset,      # Zookeeper root path to store the consumer offsets
+      configatron.some_topology.kafka_consumer_id  # Zookeeper consumer id to store the consumer offsets
+  )
+
+  spout KafkaSpout, [spout_config] do
+    output_fields :bytes
+  end
+
+  bolt SomeBolt do
+    source KafkaSpout, :shuffle
+    debug configatron.some_topology.debug
+  end
+
+  submit_options do |env|
+    set_initial_status TopologyInitialStatus.valueOf(configatron.some_topology.initial_status)
+  end
+
+  configure self.topology_name do |env|
+    debug configatron.some_topology.debug
+    num_workers configatron.some_topology.num_workers
+    max_spout_pending configatron.some_topology.max_spout_pending
+  end
+
+  on_submit do |env|
+    # code to execute when the topology is submitted to a cluster
+  end
+end
+----
+
+== Bolt.rb
+
+[source, ruby]
+----
+class SomeBolt < Redstorm::DSL::Bolt
+    output_fields :event_data, :uuid, :bytes
+
+    on_receive(:emit => false, :ack => false) do |tuple|
+        log.debug 'starting processing in SomeBolt'
+
+        if process_tuple?(tuple)
+            # do work
+            anchored_emit(tuples, generated_data, uuid, tuples['bytes'])
+        else
+            ack(tuple)
+        end
+    end
+end
+----
+
+== Emit
+
+* anchored emit
+** chains
+* emit
+
+
+== Special considerations
+
+* If a tuple execution times out, with anchored emits, it starts over!
+* 

@@ -1,0 +1,13 @@
+= Service Artifact Plugin
+R Tyler Croy <rtyler.croy@lookout.com>
+2015-07-23
+:revnumber: {project-version}
+:deckjs_transition: fade
+:deckjs_theme: swiss
+:navigation:
+:menu:
+:goto:
+:status:
+:split:
+
+
