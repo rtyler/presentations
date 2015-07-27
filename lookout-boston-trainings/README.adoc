@@ -1,0 +1,14 @@
+= Lookout Training Materials
+
+This is an link::http://asciidoctor.org[Asciidoctor] powered set of
+presentations which are structured to not include internal IP or content
+allowing them to be reused with a more broad audience
+
+
+=== Building the presentation
+
+----
+% ./gradlew
+----
+
+The presentations will be generated in: `build/asciidoc/deckjs/*.html`
