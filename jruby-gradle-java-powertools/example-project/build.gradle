@@ -4,8 +4,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jruby-gradle:jruby-gradle-plugin:0.4.0'
-        classpath 'com.github.jruby-gradle:jruby-gradle-jar-plugin:0.4.0'
+        classpath 'com.github.jruby-gradle:jruby-gradle-plugin:1.0.0'
+        classpath 'com.github.jruby-gradle:jruby-gradle-jar-plugin:1.0.0'
     }
 }
 
@@ -16,6 +16,7 @@ import com.github.jrubygradle.JRubyExec
 
 configurations {
     compile.extendsFrom jrubyJar
+    jrubyJar.extendsFrom gems
 }
 
 dependencies {
@@ -29,9 +30,8 @@ task spec(type: JRubyExec) {
     description 'Run the RSpecs for this project'
     dependsOn classes // <1>
     classpath sourceSets.main.runtimeClasspath // <2>
-    jrubyArgs '-S' // <3>
-    script 'rspec' // <4>
-    scriptArgs '--order', 'random', '--color' // <5>
+    script 'rspec' // <3>
+    scriptArgs '--order', 'random', '--color' // <4>
 }
 /* let's make our top-level check task run RSpec too */
 check.dependsOn spec
@@ -39,7 +39,6 @@ check.dependsOn spec
 jrubyJar {
     from sourceSets.main.output // <1>
     initScript 'main.rb' // <2>
-    defaultGems() // <3>
     /* no sense building a jar without passing tests */
     dependsOn spec
 }

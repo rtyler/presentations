@@ -86,6 +86,7 @@ Ruby version manager.
 **  "groups" of gem dependency enumerations
 ** Version ranges (`"~> 0.3.1"`) and pinning (`Gemfile.lock`)
 ** `bundle gem` command generates a conventional Ruby gem project structure
+* bundle updateing single versus all the things
 
 
 == Rake

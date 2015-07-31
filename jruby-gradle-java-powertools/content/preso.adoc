@@ -12,11 +12,12 @@ ifndef::imagesdir[:imagesdir: images]
 :split:
 :toc:
 
-== Presented By
+== About
 
 === Open Source Work
 
 [%step]
+* Ruby developer
 * Founded link::http://jruby-gradle.org[JRuby/Gradle] project
 // Based on picnic-table discussions at JRuby Conf EU in 2014, seeing some of the
 // problems that other developers, myself included, had with building more
@@ -25,14 +26,23 @@ ifndef::imagesdir[:imagesdir: images]
 * link::https://jenkins-ci.org[Jenkins CI] project contributor
 * link::https://twitter.com/agentdero[Prolific complainer]
 
-=== Professional Work
+=== Day job
 
-image::lookout-icon.png[Lookout, Inc]
+* Developer/Infra tooling
+* Supporting Ruby
 
 // 4 1/2 years at Lookout developing primarily in Ruby. I've shipped production
 // code in Ruby, C and Groovy while at Lookout.
 //
 // Prior to that over 4 years of work with Python.
+
+
+== Sponsored by
+
+* link:http://hackers.lookout.com[hackers.lookout.com]
+* link:http://lookout.com/about/careers/engineering[lookout.com/about/careers]
+
+image::lookout-icon.png[Lookout, Inc]
 
 
 // Before we get into the JRuby side of things, let's talk about the problem at
@@ -186,7 +196,7 @@ NOTE: Still experimental
 == Storm
 
 * Prepare an link:http://storm.apache.org[Apache Storm] topology `.jar`
-* `JRubyStormLocal` task for local topology
+* `JRubyStormLocal` task for local topology execution
 
 == Test
 
@@ -207,38 +217,6 @@ NOTE: Still Experimental
 
 image::jruby-duke.jpg[]
 
-
-== This presentation
-
-
-Uses Gradle! (of course)
-
-
-== A Gradle plugin or two
-
-[source,gradle]
-----
-include::../build.gradle[lines=1..15]
-----
-
-== Depending on Ruby gems
-
-
-[source, gradle]
-----
-include::../build.gradle[lines=35..38]
-----
-<1> Declaring a Ruby gem dependency
-
-
-== Tying it together
-
-[source, gradle]
-----
-include::../build.gradle[lines=57..86]
-----
-<1> Task dependencies
-<2> Invoking a custom backend, with Ruby!
 
 == Demo!
 
@@ -265,7 +243,7 @@ link::https://github.com/rtyler/presentations/tree/master/jruby-gradle-java-powe
 
 [source, gradle]
 ----
-include::../example-project/build.gradle[lines=17..25]
+include::../example-project/build.gradle[lines=17..26]
 ----
 <1> Depend on RSpec for executing our Ruby tests
 <2> Put the colorize gem in the "gems" configuration (default)
@@ -291,13 +269,12 @@ include::maven-metadata.xml[lines=1..20]
 
 [source, gradle]
 ----
-include::../example-project/build.gradle[lines=26..36]
+include::../example-project/build.gradle[lines=28..35]
 ----
 <1> Express task dependency, only execute after `classes` completes
 <2> Use a custom classpath to pull in Java classes
-<3> Special execution flag to trigger exec-like behavior (should go away)
-<4> Name of the Ruby binscript
-<5> Arguments for the Ruby binscript
+<3> Name of the Ruby binscript
+<4> Arguments for the Ruby binscript
 
 
 <<<<
@@ -368,12 +345,11 @@ include::../example-project/build.gradle[lines=12..14]
 
 [source, gradle]
 ----
-include::../example-project/build.gradle[lines=38..43]
+include::../example-project/build.gradle[lines=39..44]
 ----
 <1> Including the compiled classes from the "main" source set
 <2> Setting a custom, Ruby-based, entry point. Thanks to
 link::https://github.com/mkristian/jruby-mains[jruby-mains]
-<3>  Include the gems in the default `gems` configuration
 
 
 <<<<
@@ -410,8 +386,35 @@ together multiple sub-projects.
 At Lookout, we have the need to produce Java-based jars, Ruby gems and a service
 all from one source tree.
 
-=== Publishing gems and java artifacts
+== Publishing gems and java artifacts
 
+.build.gradle
+[source, gradle]
+----
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "https://my.maven.repo")
+        }
+    }
+}
+----
+
+<<<<
+
+.build.gradle
+[source, gradle]
+----
+task publish(type:JRubyExec) {
+    description 'Publish the gem to rubygems.org"
+    dependsOn assemble
+    script 'gem'
+    scriptArgs 'push', fileTree(dir: 'pkg', include: '*.gem').asFiles
+}
+
+----
 
 == Future for JRuby/Gradle
 
@@ -428,5 +431,50 @@ all from one source tree.
 // More conventional configuration, reusing concepts like configurations and
 // some of the publisher code more deeply, etc.
 
+== This presentation
+
+
+Uses Gradle! (of course)
+
+
+== A Gradle plugin or two
+
+[source,gradle]
+----
+include::../build.gradle[lines=1..17]
+----
+
+== Depending on Ruby gems
+
+
+[source, gradle]
+----
+include::../build.gradle[lines=38..40]
+----
+<1> Declaring a Ruby gem dependency
+
+
+== Tying it together
+
+[source, gradle]
+----
+include::../build.gradle[lines=60..64]
+----
+<1> Task dependencies
+<2> Invoking a custom backend, with Ruby!
+
+== One more thing
+
+=== JRuby/Gradle 1.0
+
+Available **TODAY** in the app store
+
+* link:http://jruby-gradle.org[jruby-gradle.org]
+* `base` and `jar`
+* JRuby 9.0.0.0 default
+
+
+
 == Q&A
+
 

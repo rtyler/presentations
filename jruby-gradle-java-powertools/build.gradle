@@ -1,10 +1,12 @@
 buildscript {
-    repositories { jcenter() }
+    repositories {
+        jcenter()
+    }
 
     dependencies {
+        classpath 'com.github.jruby-gradle:jruby-gradle-plugin:1.0.0'
         classpath 'org.ysb33r.gradle:vfs-gradle-plugin:1.0-beta1'
         classpath 'commons-httpclient:commons-httpclient:3.1'
-        classpath "com.github.jruby-gradle:jruby-gradle-plugin:0.4.0"
         classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.1"
     }
 }
