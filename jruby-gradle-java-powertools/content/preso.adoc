@@ -234,7 +234,7 @@ link::https://github.com/rtyler/presentations/tree/master/jruby-gradle-java-powe
 * I want to write Ruby code
 * And Ruby tests
 * And Java code
-* And I want to ues Ruby gems
+* And I want to use Ruby gems
 * And I want to use Java jars
 * And I want to still like writing code at the end of it
 
