@@ -1,0 +1,17 @@
+= docker-presentation-iamge
+
+This directory helps build the
+link:https://hub.docker.com/r/rtyler/presentation-base/[rtyler/presentation-base]
+image which contains link:https://github.com/visit1985/mdp[mdp] for building
+and presenting strictly from a single Docker container.
+
+
+
+== Building
+
+`make image tag`
+
+
+== Pushing
+
+`make image tag push`
