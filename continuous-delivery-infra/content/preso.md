@@ -207,11 +207,16 @@ traditionally
 
 
 
-*let's look at a Jenkinsfile*
+*let's look at a basic Jenkinsfile*
 
 ---
 
+
 -> # neat <-
+
+---
+
+
 
 
 ---
