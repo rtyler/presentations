@@ -183,7 +183,7 @@ traditionally
 
 ---
 
-# Jenkins as part of CD
+# Jenkins as the CD Hub
 
 
 ▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   *▛▀▀▀▀▀▀▀▜*   *▛▀▀▀▀▜*
@@ -205,17 +205,14 @@ traditionally
 
 ---
 
-# Pipeline plugin
 
-Jenkinsfile
 
-~~~
-stage 'Build'
-node('java-builder') {
-    checkout scm
-    sh './gradlew -Si'
-}
-~~~
+*let's look at a Jenkinsfile*
+
+---
+
+-> # neat <-
+
 
 ---
 

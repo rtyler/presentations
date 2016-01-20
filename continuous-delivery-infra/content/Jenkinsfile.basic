@@ -1,0 +1,21 @@
+#!groovy
+
+stage 'Build'
+node('docker') {
+    docker.image('java:8-jdk').inside {
+        checkout scm
+        sh './gradlew -Si'
+        archive includes: "build/**/*.jar"
+        stash name: 'myjavaapp', includes: 'build/**/*.jar'
+    }
+}
+
+stage 'Test'
+node('docker') {
+    docker.image('java:8-jre').inside {
+        git 'https://git/rtyler/acceptance-test-harness'
+        unstash 'myjavaapp'
+        sh './run-acceptance-tests.sh'
+    }
+}
+
