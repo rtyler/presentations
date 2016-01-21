@@ -116,7 +116,7 @@ _Play along_:
 ---
 
 
--> # Infrastructure is hard <-
+# Infrastructure is hard
 
 * *Resources*
 ** Machines (physical/virtual)
@@ -134,8 +134,7 @@ _Play along_:
 ---
 
 
--> # Open source infrastructure is hard <-
-
+# Open source infrastructure is hard
 
 * *Resources*
 ** Machines (physical/virtual)
@@ -153,9 +152,9 @@ _Play along_:
 ---
 
 
--> # Open source infrastructure is hard <-
+# Open source infrastructure is hard
 
-* Nobody is employed full time on project infrastructure
+* Nobody is employed full time on infra
 * Donationware assets across *4 data centers*
 * Pagerduty rotation is comically small
 
@@ -180,7 +179,8 @@ _Play along_:
 
 # Continuous Delivery
 
-every commit should be ready for deliveryl
+every commit should be ready for delivery
+
 deploy production when the organization is ready
 
 
@@ -245,7 +245,7 @@ two examples:
 ---
 
 
-# Unit Testing
+# Unit testing
 
 a contrived example
 
@@ -307,7 +307,7 @@ with less contrived tests
 
 # Unit testing
 
--> covers fundamental logic of your configuration management code <-
+covers fundamental logic of your configuration management code
 
 
 ---
@@ -460,8 +460,8 @@ to keep the ugly things contained
 
 We have some different pipelines to describe:
 
-* Puppet (*configuration management*, *deployment*)
-* Containers (*packaging*)
+* Puppet (configuration management)
+* Containers (packaging)
 
 ---
 
