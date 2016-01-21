@@ -118,10 +118,37 @@ _Play along_:
 
 -> # Infrastructure is hard <-
 
+* *Resources*
+** Machines (physical/virtual)
+** Routers
+** Load Balancers
+** Switches
+* *Configuration Management*
+** Files
+** Packages
+** Secrets
+* *Packaging tooling*
+* *Deployment tooling*
+* *Monitoring/alerting*
+
 ---
 
 
 -> # Open source infrastructure is hard <-
+
+
+* *Resources*
+** Machines (physical/virtual)
+** Routers
+** Load Balancers
+** Switches
+* *Configuration Management*
+** Files
+** Packages
+** Secrets
+* *Packaging tooling*
+* *Deployment tooling*
+* *Monitoring/alerting*
 
 ---
 
@@ -409,7 +436,32 @@ to keep the ugly things contained
 ---
 
 
--> # where does Jenkins fit in? <-
+# Puppet + Docker
+
+* using [garethr-docker](https://github.com/garethr/garethr-docker) puppet module
+* Puppet orchestrates running containers on hosts
+
+    docker::run { 'bind':
+        command => undef,
+        ports   => ['53:53', '53:53/udp'],
+        image   => "jenkinsciinfra/bind:${image_tag}",
+        volumes => ['/etc/bind/local:/etc/bind/local'],
+    }
+
+---
+
+
+-> the puppet pipeline is the deployment pipeline <-
+
+---
+
+
+-> # where does Jenkins fit in the picture? <-
+
+We have some different pipelines to describe:
+
+* Puppet (*configuration management*, *deployment*)
+* Containers (*packaging*)
 
 ---
 
@@ -421,7 +473,8 @@ to keep the ugly things contained
 
 # Jenkins as part of CI/CD
 
-traditionally
+traditionally, a series of jobs
+
 
 ▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*
 ▌development▐ ⇉ *▌build▐* ⇉ ▌archive▐ ⇉ *▌test▐*
@@ -455,7 +508,7 @@ traditionally
 
 
 
-*let's look at a basic Jenkinsfile*
+-> *let's look at a basic Jenkinsfile* <-
 
 ---
 
@@ -464,6 +517,109 @@ traditionally
 
 ---
 
+
+-> *how about something more complex* <-
+
+---
+
+
+-> # neat <-
+
+---
+
+
+# Gaps in Pipeline
+
+* Developing a Jenkinsfile can be tricky
+* Currently no good pipeline visualization
+* Putting manual deployment gates in is
+  [tricky](https://issues.jenkins-ci.org/browse/JENKINS-27039)
+
+---
+
+
+-> but wait <-
+
+---
+
+
+-> # you never deployed production you cheater <-
+
+---
+
+
+# Meet r10k
+
+[r10k](https://github.com/puppetlabs/r10k) manages dynamic environments on a
+Puppet master.
+
+*Environment:* puppet agent -t --environment staging
+
+
+
+Roughly speaking: Git branch == environment
+
+
+---
+
+
+# jenkins-infra pipeline
+
+
+▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜
+▌pull request #1▐
+▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
+              ↓
+▌staging ⎇    ↓ Automated tests, review, merge
+▙▄▄▄▄▄▄▄▄▄▄▄▄▄x▄▄▄
+               ↘
+▌production ⎇    ↘ Manual merge, auto-deploy
+▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄x▄▄▄▄▄▄▄▄▄▄▄
+
+
+---
+
+# Webhooks complete the pipeline
+
+* GitHub pings [r10k webhook server](https://github.com/acidprime/r10k#webhook-support)
+* r10k deploys environment
+* puppet agents pick up changes
+
+
+---
+
+
+-> # what is missing? <-
+
+---
+
+
+-> # Open source infrastructure is hard <-
+
+* *Nobody is employed full time on project infrastructure*
+* Donationware assets across 4 data centers
+* Pagerduty rotation is comically small
+
+---
+
+
+# Missing pieces
+
+* Tie delivery of files back into Jenkins with the [Puppet plugin](https://wiki.jenkins-ci.org/display/JENKINS/Puppet+Plugin)
+* Cross data-center Docker Swarm
+* [beaker-rspec](https://github.com/puppetlabs/beaker-rspec) + Docker as vagrant/serverspec replacement
+
+
+---
+
+
+# we want you!
+
+* #jenkins-infra on [Freenode](irc://irc.freenode.net/#jenkins-infra)
+* [jenkins-infra](http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra) mailing list
+* [jenkins-infra](https://github.com/jenkins-infra) on GitHub
+
+---
 
 -> # Q&A <-
 
