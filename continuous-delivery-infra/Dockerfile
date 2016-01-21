@@ -4,7 +4,7 @@ MAINTAINER tyler@linux.com
 
 # g++ needed to build the stupid `unf` gem, ruby-io-console for bundler to
 # cooperate and ruby-nokogiri since we can't build straight from bundler
-RUN apk update && apk add --no-cache bash ruby ruby-dev g++ ruby-nokogiri ruby-io-console
+RUN apk update && apk add --no-cache bash ruby ruby-dev g++ ruby-nokogiri ruby-io-console vim
 # Grab a bunch of ruby tools for demonstration purposes.
 # syck gem to make Puppet work properly on Ruby 2.2.x
 RUN gem install -N rspec-puppet puppet-lint puppet bundler io-console syck
