@@ -27,5 +27,5 @@ RUN bundle exec rake spec_prep
 
 
 WORKDIR /
-ADD content/*.md /
-CMD /bin/sh -c "/usr/local/bin/mdp -fi /preso.md"
+COPY content /content
+CMD /bin/sh -c "/usr/local/bin/mdp -fi /content/preso.md"
