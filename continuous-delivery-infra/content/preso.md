@@ -29,6 +29,7 @@ _Play along_:
 
 ---
 
+
 # R. Tyler Croy
 ## CloudBees Jenkins Evangelist
 
@@ -37,6 +38,7 @@ _Play along_:
 * INFRA. *INFRA*. _*INFRA*_.
 
 ---
+
 
 # Infrastructure
 
@@ -54,6 +56,7 @@ _Play along_:
 * *Monitoring/alerting*
 
 ---
+
 
 # Project Infrastructure
 
@@ -77,6 +80,7 @@ _Play along_:
 
 ---
 
+
 # Beginning (2006 - 2011)
 
 * Scavenged hardware
@@ -84,6 +88,7 @@ _Play along_:
 * `sudo hopethisworks --force`
 
 ---
+
 
 # Better-ish (2011 - 2014)
 
@@ -95,6 +100,7 @@ _Play along_:
 ** [puppet-lint](http://puppet-lint.com/)
 
 ---
+
 
 # More Gooder (now)
 
@@ -109,13 +115,16 @@ _Play along_:
 
 ---
 
+
 -> # Infrastructure is hard <-
 
 ---
 
+
 -> # Open source infrastructure is hard <-
 
 ---
+
 
 -> # Open source infrastructure is hard <-
 
@@ -125,12 +134,14 @@ _Play along_:
 
 ---
 
+
 # Continuous Delivery
 
 
 > it hurts when I deploy
 
 ---
+
 
 # Continuous Delivery
 
@@ -139,53 +150,11 @@ _Play along_:
 
 ---
 
-# Continuous Delivery
-
-*every commit should be ready for delivery*
-
-▛▀▀▀▀▀▀▀▀▀▀▀▜   ▛▀▀▀▀▀▜   ▛▀▀▀▀▀▀▀▜   ▛▀▀▀▀▜
-▌development▐ ⇉ ▌build▐ ⇉ ▌archive▐ ⇉ ▌test▐
-▙▄▄▄▄▄▄▄▄▄▄▄▟   ▙▄▄▄▄▄▟   ▙▄▄▄▄▄▄▄▟   ▙▄▄▄▄▟
-
----
 
 # Continuous Delivery
 
-*deploy production when the organization is ready*
-
- ▛▀▀▀▀▀▀▀▜   ▛▀▀▀▀▜   ▛▀▀▀▀▀▜   ▛▀▀▀▀▀▀▜
- ▌archive▐ ⇉ ▌test▐ ⇉ ▌stage▐ ⇉ ▌deploy▐
- ▙▄▄▄▄▄▄▄▟   ▙▄▄▄▄▟   ▙▄▄▄▄▄▟   ▙▄▄▄▄▄▄▟
-
----
-
-
--> # neat <-
-
----
-
-
--> # where does Jenkins fit in <-
-
-
----
-
-
--> *insert Jenkins Web UI screenshot here* <-
-
----
-
-# Jenkins as part of CI/CD
-
-traditionally
-
-▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*
-▌development▐ ⇉ *▌build▐* ⇉ ▌archive▐ ⇉ *▌test▐*
-▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*
-
----
-
-# Jenkins as the CD Hub
+every commit should be ready for deliveryl
+deploy production when the organization is ready
 
 
 ▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   *▛▀▀▀▀▀▀▀▜*   *▛▀▀▀▀▜*
@@ -196,7 +165,21 @@ traditionally
                 *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
                 *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
 
+---
+
+
+-> # neat <-
+
+---
+
+
+# Two Important ingredients
+
+* *Testability*
+* *Reproducibility*
+
 ----
+
 
 # Testing Infrastructure
 
@@ -214,6 +197,7 @@ two examples:
 * acceptance testing
 
 ---
+
 
 # Testing Infrastructure
 
@@ -233,6 +217,7 @@ two examples:
 
 ---
 
+
 # Unit Testing
 
 a contrived example
@@ -247,6 +232,7 @@ a contrived example
 
 ---
 
+
 # Unit testing
 
 rspec-puppet asserts what you expect to be in the catalogue
@@ -258,6 +244,7 @@ rspec-puppet asserts what you expect to be in the catalogue
     end
 
 ---
+
 
 # Unit testing
 
@@ -274,6 +261,7 @@ a less contrived exapmle
 
 ---
 
+
 # Unit testing
 
 with less contrived tests
@@ -288,6 +276,7 @@ with less contrived tests
     end
 
 ---
+
 
 # Unit testing
 
@@ -312,6 +301,7 @@ with less contrived tests
 
 ---
 
+
 # Acceptance testing
 
 with [serverspec](http://serverspec.org), a contrived example
@@ -329,6 +319,7 @@ with [serverspec](http://serverspec.org), a contrived example
 
 
 ---
+
 
 # Acceptance testing
 
@@ -351,6 +342,7 @@ sharing behaviors across hosts
 
 ---
 
+
 # Acceptance testing
 
 using shared behaviors
@@ -365,6 +357,92 @@ using shared behaviors
 -> # neat <-
 
 ---
+
+
+# Reproducible Infrastructure
+
+
+DOCKER
+
+*DOCKER*
+
+_*DOCKER*_
+
+---
+
+
+# Docker: Pros
+
+(besides the cool factor)
+
+* Easy to partition workloads on physical hardware
+* Consistent application runtime environment
+* Rapidly evolving
+
+---
+
+
+# Docker: Cons
+
+* Nebulous boundaries between what goes in Puppet and what goes in a Dockerfile
+* iptables
+* The image becomes another _thing_ with a lifecycle
+* Rapidly evolving
+
+---
+
+
+# Where we use Docker
+
+to keep the ugly things contained
+
+* JIRA
+* Confluence
+* Bind9
+* IRC bots
+
+---
+
+
+-> let's look at some Dockerfiles <-
+
+---
+
+
+-> # where does Jenkins fit in? <-
+
+---
+
+
+-> *insert Jenkins Web UI screenshot here* <-
+
+---
+
+
+# Jenkins as part of CI/CD
+
+traditionally
+
+▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*
+▌development▐ ⇉ *▌build▐* ⇉ ▌archive▐ ⇉ *▌test▐*
+▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*
+
+---
+
+
+# Jenkins as the CD Hub
+
+
+▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   *▛▀▀▀▀▀▀▀▜*   *▛▀▀▀▀▜*
+▌development▐ ⇉ *▌build▐* ⇉ *▌archive▐* ⇉ *▌test▐*
+▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   *▙▄▄▄▄▄▄▄▟*   *▙▄▄▄▄▟*
+                                        ↓
+                *▛▀▀▀▀▀▀▜*   *▛▀▀▀▀▀▜*     ↙
+                *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
+                *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
+
+---
+
 
 # Pipeline plugin
 ## formerly known as Workflow
