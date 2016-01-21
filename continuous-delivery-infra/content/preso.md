@@ -411,7 +411,9 @@ _*DOCKER*_
 
 # Docker: Cons
 
-* Nebulous boundaries between what goes in Puppet and what goes in a Dockerfile
+(besides the cool factor)
+
+* What goes in Puppet vs Dockerfile
 * iptables
 * The image becomes another _thing_ with a lifecycle
 * Rapidly evolving
