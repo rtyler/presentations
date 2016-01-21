@@ -162,11 +162,13 @@ _Play along_:
 
 -> # neat <-
 
-
-where does Jenkins fit in?
-
 ---
 
+
+-> # where does Jenkins fit in <-
+
+
+---
 
 
 -> *insert Jenkins Web UI screenshot here* <-
@@ -194,6 +196,174 @@ traditionally
                 *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
                 *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
 
+----
+
+# Testing Infrastructure
+
+
+ ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*   ▛▀▀▀▀▀▜
+ ▌ build ▐ ⇉ *▌test▐* ⇉ ▌stage▐
+ ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*   ▙▄▄▄▄▄▟
+
+
+there are multiple layers of testing
+
+two examples:
+
+* unit testing
+* acceptance testing
+
+---
+
+# Testing Infrastructure
+
+* unit testing
+** [rspec-puppet](http://rspec-puppet.com)
+* acceptance testing
+** [serverspec](http://serverspec.org)
+** [beaker](https://github.com/puppetlabs/beaker)
+
+---
+
+
+-> # quick refresher on how puppet works <-
+
+
+-> (it's a graph of stuff) <-
+
+---
+
+# Unit Testing
+
+a contrived example
+
+    class jenkins::repo {
+        include apt
+        apt::source { 'jenkins':
+            location => 'http://pkg.jenkins-ci.org/debian-stable',
+            release  => 'binary/',
+        }
+    }
+
+---
+
+# Unit testing
+
+rspec-puppet asserts what you expect to be in the catalogue
+
+
+    describe 'jenkins::repo' do
+        it { should contain_class 'apt' }
+        it { should contain_apt__source 'jenkins' }
+    end
+
+---
+
+# Unit testing
+
+a less contrived exapmle
+
+
+    class jenkins::repo {
+        case $::osfamily {
+            'RedHat': { include jenkins::repo::redhat },
+            'Debian': { include jenkins::repo::debian },
+            default: { fail("Unsupported OS ${::osfamily}") }
+        }
+    }
+
+---
+
+# Unit testing
+
+with less contrived tests
+
+
+    describe 'jenkins::repo' do
+        context 'on Debian-like systems' do
+            jet(:facts) { {:osfamily => 'Debian' } }
+            it { should contain_class 'apt' }
+            it { should contain_apt__source 'jenkins' }
+        end
+    end
+
+---
+
+# Unit testing
+
+-> covers fundamental logic of your configuration management code <-
+
+
+---
+
+
+-> # neat <-
+
+---
+
+
+-> # quick refresher on how puppet works <-
+
+
+-> (it's a graph of stuff) <-
+
+
+-> doesn't mean anything until you run it on a host <-
+
+---
+
+# Acceptance testing
+
+with [serverspec](http://serverspec.org), a contrived example
+
+
+    describe 'www-host' do
+        describe service('apache2') do
+            it { should be_enabled }
+            it { should be_running }
+        end
+        describe port(80) do
+            it { should be_listening }
+        end
+    end
+
+
+---
+
+# Acceptance testing
+
+sharing behaviors across hosts
+
+    require 'rspec'
+    shared_examples 'a standard Linux host' do
+        describe port(22) do
+            it { should be_listening }
+        end
+        describe file('/etc/ssh/sshd_config') do
+            it { should contain 'PasswordAuthentication no' }
+        end
+        # We should always have the agent running
+        describe service('datadog-agent') do
+            it { should be_enabled }
+            it { should be_running }
+        end
+    end
+
+---
+
+# Acceptance testing
+
+using shared behaviors
+
+    describe 'www-host' do
+        it_behaves_like 'a standard Linux host'
+    end
+
+---
+
+
+-> # neat <-
+
 ---
 
 # Pipeline plugin
@@ -216,10 +386,6 @@ traditionally
 
 ---
 
-
-
-
----
 
 -> # Q&A <-
 
