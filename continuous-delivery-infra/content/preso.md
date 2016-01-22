@@ -655,8 +655,16 @@ Roughly speaking: Git branch == environment
 
 ---
 
+
 -> # Q&A <-
 
 -> [@agentdero](https://twitter.com/agentdero) <-
 -> [rtyler](https://github.com/rtyler) <-
 -> [tyler@linux.com](mailto:tyler@linux.com) <-
+
+## Resources
+
+* [jenkins-infra](https://github.com/jenkins-infra)
+* [workflow-examples](https://github.com/jenkinsci/workflow-examples)
+* [Pipeline <3 Jenkins](https://jenkins-ci.org/solutions/pipeline)
+* [Docker <3 Jenkins](https://jenkins-ci.org/solutions/docker)
