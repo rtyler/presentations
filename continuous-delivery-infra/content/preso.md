@@ -205,6 +205,14 @@ deploy production when the organization is ready
 * *Testability*
 * *Reproducibility*
 
+---
+
+
+# Two Important ingredients
+
+* *Testability*
+* Reproducibility
+
 ----
 
 
@@ -386,6 +394,30 @@ using shared behaviors
 ---
 
 
+# Testing Infrastructure
+
+
+ ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*   ▛▀▀▀▀▀▜
+ ▌ build ▐ ⇉ *▌test▐* ⇉ ▌stage▐
+ ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*   ▙▄▄▄▄▄▟
+
+
+there are multiple layers of testing
+
+* unit testing: rspec-puppet
+* acceptance testing: serverspec
+
+---
+
+
+# Two Important ingredients
+
+* Testability
+* *Reproducibility*
+
+----
+
+
 # Reproducible Infrastructure
 
 
@@ -453,7 +485,7 @@ to keep the ugly things contained
 ---
 
 
--> the puppet pipeline is the deployment pipeline <-
+-> the puppet pipeline is your container deployment pipeline <-
 
 ---
 
