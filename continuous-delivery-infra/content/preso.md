@@ -22,6 +22,25 @@ _Play along_:
 > Built with Java, it provides hundreds of plugins to support building,
 > testing, deploying and automation for virtually any project
 
+
+Affilliated with [SPI](http://spi-inc.org)
+
+---
+
+
+# Sponsor interlude
+
+* CloudBees
+* [OSUOSL](https://osuosl.org)
+* PagerDuty
+* Datadog
+* Atlassian
+* Rackspace
+* RedHat
+* Fastly
+* XMission
+* JetBrains
+
 ---
 
 
@@ -200,6 +219,24 @@ deploy production when the organization is ready
 ---
 
 
+# Infrastructure is hard
+
+* *Resources*
+** Machines (physical/virtual)
+** Routers
+** Load Balancers
+** Switches
+* *Configuration Management*
+** Files
+** Packages
+** Secrets
+* *Packaging tooling*
+* *Deployment tooling*
+* *Monitoring/alerting*
+
+---
+
+
 # Two Important ingredients
 
 * *Testability*
@@ -315,13 +352,23 @@ with less contrived tests
 
 # Unit testing
 
-covers fundamental logic of your configuration management code
+covers fundamental logic of
+configuration management code
+
+
+(if you develop a puppet module,
+omg plz write rspec-puppet)
 
 
 ---
 
 
 -> # neat <-
+
+---
+
+
+*let's look at some real stuff*
 
 ---
 
