@@ -567,7 +567,7 @@ traditionally, a series of jobs
 * Developing a Jenkinsfile can be tricky
 ** [experimental pipeline editor plugin](https://github.com/jenkinsci/pipeline-editor-plugin)
 * Currently no good pipeline visualization
-** [Workflow Stage View](https://dzone.com/refcardz/continuous-delivery-with-jenkins-workflow)1
+** [Workflow Stage View](https://dzone.com/refcardz/continuous-delivery-with-jenkins-workflow)
 * Putting manual deployment gates in is
   [tricky](https://issues.jenkins-ci.org/browse/JENKINS-27039)
 
