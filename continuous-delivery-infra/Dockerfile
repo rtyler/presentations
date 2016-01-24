@@ -10,6 +10,8 @@ RUN apk update && apk add --no-cache bash ruby ruby-dev g++ ruby-nokogiri ruby-i
 RUN gem install -N rspec-puppet puppet-lint puppet bundler io-console syck
 
 RUN git clone --depth=1 https://github.com/jenkins-infra/jenkins-infra.git
+RUN git clone --depth=1 https://github.com/jenkinsci/puppet-jenkins.git
+
 
 WORKDIR /jenkins-infra
 # remove Gemfile.lock so we aren't bound so tightly to Ruby gem versions (like
