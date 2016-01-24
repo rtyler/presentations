@@ -341,7 +341,7 @@ with less contrived tests
 
     describe 'jenkins::repo' do
         context 'on Debian-like systems' do
-            jet(:facts) { {:osfamily => 'Debian' } }
+            let(:facts) { {:osfamily => 'Debian' } }
             it { should contain_class 'apt' }
             it { should contain_apt__source 'jenkins' }
         end
