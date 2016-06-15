@@ -704,6 +704,14 @@ Roughly speaking: Git branch == environment
 
 ---
 
+# oh hey, tell me things
+
+wouldn't a better way to manage and prosion Jenkins with code be nice?
+
+
+-> [JENKINS-31094](https://issues.jenkins-ci.org/browse/JENKINS-31094) <-
+
+---
 
 -> # Q&A <-
 
