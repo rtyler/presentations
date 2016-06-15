@@ -1,0 +1,26 @@
+= Continuous Delivery of Infrastructure with Jenkins
+
+This image contains both my presentation on Continuous Delivery of
+Infrastructure with Jenkins, but it also includes some example code taken
+directly from the Jenkins project.
+
+Running the presentation itself just requires: `docker run -ti rtyler/cd-preso`
+
+*Accessing the demo code:*
+
+    docker run -ti rtyler/cd-preso sh
+
+Will drop you into a shell inside the container. You can then navigate to
+`/content` for the presentation content and examples. You can also navigate to
+`/puppet-jenkins` or `/jenkins-infra1` to access the copy of the jenkins-infra
+or puppet-jenkins puppet code`
+
+From the shell you can also run the presentation with: `mdp -fi /content/preso.md`
+
+*HELP I DON'T KNOW DOCKER*
+
+The presentation code itself can be found in
+linkhttps://github.com/rtyler/presentations/tree/master/continuous-delivery-infra[this
+github repository]; the
+markdown for the presentation is in
+link:https://github.com/rtyler/presentations/blob/master/continuous-delivery-infra/content/preso.md[preso.md]
