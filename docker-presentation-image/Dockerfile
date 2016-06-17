@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.2
 MAINTAINER tyler@linux.com
 
 
