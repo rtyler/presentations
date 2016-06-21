@@ -32,14 +32,10 @@ Affilliated with [SPI](http://spi-inc.org)
 
 * CloudBees
 * [OSUOSL](https://osuosl.org)
+* [Microsoft](https://jenkins.io/blog/2016/05/18/announcing-azure-partnership/)
 * PagerDuty
 * Datadog
 * Atlassian
-* Rackspace
-* RedHat
-* Fastly
-* XMission
-* JetBrains
 
 ---
 
@@ -175,6 +171,7 @@ Affilliated with [SPI](http://spi-inc.org)
 
 * Nobody is employed full time on infra
 * Donationware assets across *4 data centers*
+** Conslidating to a single cloud
 * Pagerduty rotation is comically small
 
 ---
@@ -681,6 +678,7 @@ Roughly speaking: Git branch == environment
 
 * *Nobody is employed full time on project infrastructure*
 * Donationware assets across 4 data centers
+** Conslidating to a single cloud
 * Pagerduty rotation is comically small
 
 ---
@@ -689,9 +687,19 @@ Roughly speaking: Git branch == environment
 # Missing pieces
 
 * Tie delivery of files back into Jenkins with the [Puppet plugin](https://wiki.jenkins-ci.org/display/JENKINS/Puppet+Plugin)
-* Cross data-center Docker Swarm
-* [beaker-rspec](https://github.com/puppetlabs/beaker-rspec) + Docker as vagrant/serverspec replacement
+* Docker Swarm for burstable container capacity
+* [beaker](https://github.com/puppetlabs/beaker) + Docker as Vagrant/serverspec replacement
 
+
+---
+
+
+# Migration to Azure
+
+* Continuous delivery of [Terraform](https://terraform.io) plans
+* Better sizing of "machines" to their role
+* Creating VM images via Jenkins
+* [Blue-Green deployments](http://martinfowler.com/bliki/BlueGreenDeployment.html)
 
 ---
 
