@@ -2,6 +2,7 @@
 
 stage 'Build'
 node('docker') {
+    /* provided by the CloudBees Docker Pipeline plugin */
     docker.image('java:8-jdk').inside {
         checkout scm
         sh './gradlew -Si'

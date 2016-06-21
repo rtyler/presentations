@@ -91,7 +91,6 @@ Affilliated with [SPI](http://spi-inc.org)
 ** MeetingBot
 ** LDAP
 ** Account app
-** Spam bot
 
 ---
 
@@ -180,16 +179,6 @@ Affilliated with [SPI](http://spi-inc.org)
 # Continuous Delivery
 
 
-> it hurts when I deploy
-
----
-
-
-# Continuous Delivery
-
-
-*so deploy more*
-
 ---
 
 
@@ -198,7 +187,6 @@ Affilliated with [SPI](http://spi-inc.org)
 every commit should be ready for delivery
 
 deploy production when the organization is ready
-
 
 ▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   *▛▀▀▀▀▀▀▀▜*   *▛▀▀▀▀▜*
 ▌development▐ ⇉ *▌build▐* ⇉ *▌archive▐* ⇉ *▌test▐*
@@ -211,7 +199,16 @@ deploy production when the organization is ready
 ---
 
 
--> # neat <-
+# Continuous Delivery
+
+> it hurts when I deploy
+
+---
+
+
+# Continuous Delivery
+
+*so deploy more*
 
 ---
 
@@ -237,7 +234,7 @@ deploy production when the organization is ready
 # Two Important ingredients
 
 * Testability
-* Reproducibility
+* Consistency
 
 ---
 
@@ -245,25 +242,22 @@ deploy production when the organization is ready
 # Two Important ingredients
 
 * *Testability*
-* Reproducibility
+* Consistency
 
-----
+---
 
 
 # Testing Infrastructure
-
 
  ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*   ▛▀▀▀▀▀▜
  ▌ build ▐ ⇉ *▌test▐* ⇉ ▌stage▐
  ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*   ▙▄▄▄▄▄▟
 
-
 there are multiple layers of testing
-
-two examples:
 
 * unit testing
 * acceptance testing
+* monitoring
 
 ---
 
@@ -275,6 +269,9 @@ two examples:
 * acceptance testing
 ** [serverspec](http://serverspec.org)
 ** [beaker](https://github.com/puppetlabs/beaker)
+* monitoring
+** [serverspec](http://serverspec.org)
+** [Datadog](https://www.datadoghq.com/)
 
 ---
 
@@ -292,11 +289,11 @@ a contrived example
 
 ~~~ {.numberLines}
 class jenkins::repo {
-    include apt
-    apt::source { 'jenkins':
+  include apt
+  apt::source { 'jenkins':
     location => 'http://pkg.jenkins.io/debian-stable',
     release  => 'binary/',
-    }
+  }
 }
 ~~~
 
@@ -312,8 +309,8 @@ is in the graph
 
 ~~~ {.numberLines}
 describe 'jenkins::repo' do
-    it { should contain_class 'apt' }
-    it { should contain_apt__source 'jenkins' }
+  it { should contain_class 'apt' }
+  it { should contain_apt__source 'jenkins' }
 end
 ~~~
 
@@ -326,11 +323,11 @@ a less contrived exapmle
 
 ~~~
 class jenkins::repo {
-    case $::osfamily {
+  case $::osfamily {
     'RedHat': { include jenkins::repo::redhat },
     'Debian': { include jenkins::repo::debian },
     default: { fail("Unsupported OS ${::osfamily}") }
-    }
+  }
 }
 ~~~
 
@@ -343,11 +340,11 @@ with less contrived tests
 
 ~~~
 describe 'jenkins::repo' do
-    context 'on Debian-like systems' do
+  context 'on Debian-like systems' do
     let(:facts) { {:osfamily => 'Debian' } }
     it { should contain_class 'apt' }
     it { should contain_apt__source 'jenkins' }
-    end
+  end
 end
 ~~~
 
@@ -362,7 +359,6 @@ configuration management code
 
 (if you develop a puppet module,
 omg plz write rspec-puppet)
-
 
 ---
 
@@ -438,6 +434,14 @@ using shared behaviors
 ~~~
 describe 'www-host' do
   it_behaves_like 'a standard Linux host'
+
+  describe service('apache2') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+  describe port(80) do
+    it { should be_listening }
+  end
 end
 ~~~
 
@@ -448,6 +452,14 @@ end
 
 ---
 
+
+# Monitoring
+
+* process checks
+* service health checks
+* synthetic transactions
+
+---
 
 # Testing Infrastructure
 
@@ -461,6 +473,7 @@ there are multiple layers of testing
 
 * unit testing: rspec-puppet
 * acceptance testing: serverspec
+* monitoring: datadog
 
 ---
 
@@ -468,10 +481,21 @@ there are multiple layers of testing
 # Two Important ingredients
 
 * Testability
-* *Reproducibility*
+* *Consistency*
 
-----
+---
 
+
+# Reproducible Infrastructure
+
+
+Consistent, repeatable, environments
+
+* VM images
+* Containers
+* Terraform
+
+---
 
 # Reproducible Infrastructure
 
@@ -511,6 +535,7 @@ _*DOCKER*_
 # Where we use Docker
 
 to keep the ugly things contained
+on physical hardware
 
 * JIRA
 * Confluence
@@ -530,7 +555,6 @@ to keep the ugly things contained
 * using [garethr-docker](https://github.com/garethr/garethr-docker) puppet module
 * Puppet orchestrates running containers on hosts
 
-
 ~~~
 docker::run { 'bind':
   command => undef,
@@ -544,6 +568,14 @@ docker::run { 'bind':
 
 
 -> the puppet pipeline is your container deployment pipeline <-
+
+---
+
+
+# Two Important ingredients
+
+* Testability
+* Consistency
 
 ---
 
@@ -581,7 +613,6 @@ traditionally, a series of jobs
                 *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
                 *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
 
-
 ---
 
 
@@ -592,9 +623,19 @@ traditionally, a series of jobs
 
 # Pipeline plugin
 
-* Define your delivery pipeline as code
+* Define your delivery [pipeline as code](https://jenkins.io/doc/pipeline)
 * Feed it to Jenkins
 * Enjoy a tasty beverage
+
+---
+
+# Pipeline plugin
+
+Model your delivery pipeline in *code*.
+
+* Check it into Git
+* Code review it
+* Iterate on it
 
 ---
 
@@ -602,11 +643,18 @@ traditionally, a series of jobs
 
 -> *let's look at a basic Jenkinsfile* <-
 
-
 ---
 
 
 -> # neat <-
+
+---
+
+
+# Pipeline plugin(s)
+
+* [Pipeline Stage View  plugin](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Stage+View+Plugin)
+* [GitHub Organization Folder](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+Organization+Folder+Plugin)
 
 ---
 
@@ -629,9 +677,7 @@ Puppet master.
 *Environment:* puppet agent -t --environment staging
 
 
-
 Roughly speaking: Git branch == environment
-
 
 ---
 
@@ -649,7 +695,6 @@ Roughly speaking: Git branch == environment
 ▌production ⎇    ↘ Manual merge, auto-deploy
 ▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄x▄▄▄▄▄▄▄▄▄▄▄
 
-
 ---
 
 # Webhooks complete the pipeline
@@ -657,7 +702,6 @@ Roughly speaking: Git branch == environment
 * GitHub pings [r10k webhook server](https://github.com/acidprime/r10k#webhook-support)
 * r10k deploys environment
 * puppet agents pick up changes
-
 
 ---
 
@@ -679,10 +723,9 @@ Roughly speaking: Git branch == environment
 
 # Missing pieces
 
-* Tie delivery of files back into Jenkins with the [Puppet plugin](https://wiki.jenkins-ci.org/display/JENKINS/Puppet+Plugin)
-* Docker Swarm for burstable container capacity
+* Tie delivery back into Jenkins with the [Puppet plugin](https://wiki.jenkins-ci.org/display/JENKINS/Puppet+Plugin)
 * [beaker](https://github.com/puppetlabs/beaker) + Docker as Vagrant/serverspec replacement
-
+* Docker Swarm for burstable container capacity
 
 ---
 
