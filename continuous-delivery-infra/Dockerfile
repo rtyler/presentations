@@ -25,7 +25,7 @@ RUN echo "gem 'nokogiri', '1.6.6.2'" >> Gemfile && echo "gem 'syck'" >> Gemfile 
 # etc
 #ENV RUBYOPT="-rsyck"
 # Pre-cache all of our puppet modules just to make demonstration faster
-RUN bundle exec rake spec_prep
+RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf && bundle exec rake spec_prep
 
 
 WORKDIR /
