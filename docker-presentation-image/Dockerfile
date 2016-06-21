@@ -1,10 +1,12 @@
-FROM alpine:3.2
+FROM alpine:3.3
 MAINTAINER tyler@linux.com
 
 
-RUN apk update
 # Get the necessary dependencies to build our mdp installation
-RUN apk add git make gcc binutils libc-dev ncurses-dev
+RUN apk update && apk add --no-cache git make gcc binutils libc-dev ncurses-dev
 # Grab mdp for building
-RUN git clone https://github.com/visit1985/mdp.git
-RUN cd mdp && make && make install
+RUN git clone --depth=1 https://github.com/visit1985/mdp.git
+
+WORKDIR mdp
+RUN make && make install
+WORKDIR /
