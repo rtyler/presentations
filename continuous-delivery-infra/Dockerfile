@@ -23,7 +23,7 @@ RUN echo "gem 'nokogiri', '1.6.6.2'" >> Gemfile && echo "gem 'syck'" >> Gemfile 
 # invoke all Ruby type things with RUBYOPT="-rsyck" to ensure the syck gem gets
 # loaded properly for letting bundler sub-invoke Rubies for executing puppet,
 # etc
-ENV RUBYOPT="-rsyck"
+#ENV RUBYOPT="-rsyck"
 # Pre-cache all of our puppet modules just to make demonstration faster
 RUN bundle exec rake spec_prep
 
