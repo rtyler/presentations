@@ -1,4 +1,4 @@
-%title:
+%title: 
 %author: R. Tyler Croy .oΟo. CloudBees
 %date: 2016-01-19
 
@@ -236,8 +236,8 @@ deploy production when the organization is ready
 
 # Two Important ingredients
 
-* *Testability*
-* *Reproducibility*
+* Testability
+* Reproducibility
 
 ---
 
@@ -286,31 +286,36 @@ two examples:
 
 ---
 
-
 # Unit testing
 
 a contrived example
 
-    class jenkins::repo {
-        include apt
-        apt::source { 'jenkins':
-            location => 'http://pkg.jenkins-ci.org/debian-stable',
-            release  => 'binary/',
-        }
+~~~ {.numberLines}
+class jenkins::repo {
+    include apt
+    apt::source { 'jenkins':
+    location => 'http://pkg.jenkins.io/debian-stable',
+    release  => 'binary/',
     }
+}
+~~~
 
 ---
 
 
 # Unit testing
 
-rspec-puppet asserts what you expect to be in the catalogue
+assert that what you expect
+to be in the graph
+is in the graph
 
 
-    describe 'jenkins::repo' do
-        it { should contain_class 'apt' }
-        it { should contain_apt__source 'jenkins' }
-    end
+~~~ {.numberLines}
+describe 'jenkins::repo' do
+    it { should contain_class 'apt' }
+    it { should contain_apt__source 'jenkins' }
+end
+~~~
 
 ---
 
@@ -319,14 +324,15 @@ rspec-puppet asserts what you expect to be in the catalogue
 
 a less contrived exapmle
 
-
-    class jenkins::repo {
-        case $::osfamily {
-            'RedHat': { include jenkins::repo::redhat },
-            'Debian': { include jenkins::repo::debian },
-            default: { fail("Unsupported OS ${::osfamily}") }
-        }
+~~~
+class jenkins::repo {
+    case $::osfamily {
+    'RedHat': { include jenkins::repo::redhat },
+    'Debian': { include jenkins::repo::debian },
+    default: { fail("Unsupported OS ${::osfamily}") }
     }
+}
+~~~
 
 ---
 
@@ -335,14 +341,15 @@ a less contrived exapmle
 
 with less contrived tests
 
-
-    describe 'jenkins::repo' do
-        context 'on Debian-like systems' do
-            let(:facts) { {:osfamily => 'Debian' } }
-            it { should contain_class 'apt' }
-            it { should contain_apt__source 'jenkins' }
-        end
+~~~
+describe 'jenkins::repo' do
+    context 'on Debian-like systems' do
+    let(:facts) { {:osfamily => 'Debian' } }
+    it { should contain_class 'apt' }
+    it { should contain_apt__source 'jenkins' }
     end
+end
+~~~
 
 ---
 
@@ -385,39 +392,41 @@ omg plz write rspec-puppet)
 
 with [serverspec](http://serverspec.org), a contrived example
 
-
-    describe 'www-host' do
-        describe service('apache2') do
-            it { should be_enabled }
-            it { should be_running }
-        end
-        describe port(80) do
-            it { should be_listening }
-        end
-    end
-
+~~~
+describe 'www-host' do
+  describe service('apache2') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+  describe port(80) do
+    it { should be_listening }
+  end
+end
+~~~
 
 ---
-
 
 # Acceptance testing
 
 sharing behaviors across hosts
 
-    require 'rspec'
-    shared_examples 'a standard Linux host' do
-        describe port(22) do
-            it { should be_listening }
-        end
-        describe file('/etc/ssh/sshd_config') do
-            it { should contain 'PasswordAuthentication no' }
-        end
-        # We should always have the agent running
-        describe service('datadog-agent') do
-            it { should be_enabled }
-            it { should be_running }
-        end
-    end
+~~~
+shared_examples 'a standard Linux host' do
+  describe port(22) do
+    it { should be_listening }
+  end
+
+  describe file('/etc/ssh/sshd_config') do
+    it { should contain 'PasswordAuthentication no' }
+  end
+
+  # We should always have the agent running
+  describe service('datadog-agent') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+end
+~~~
 
 ---
 
@@ -426,9 +435,11 @@ sharing behaviors across hosts
 
 using shared behaviors
 
-    describe 'www-host' do
-        it_behaves_like 'a standard Linux host'
-    end
+~~~
+describe 'www-host' do
+  it_behaves_like 'a standard Linux host'
+end
+~~~
 
 ---
 
@@ -519,12 +530,15 @@ to keep the ugly things contained
 * using [garethr-docker](https://github.com/garethr/garethr-docker) puppet module
 * Puppet orchestrates running containers on hosts
 
-    docker::run { 'bind':
-        command => undef,
-        ports   => ['53:53', '53:53/udp'],
-        image   => "jenkinsciinfra/bind:${image_tag}",
-        volumes => ['/etc/bind/local:/etc/bind/local'],
-    }
+
+~~~
+docker::run { 'bind':
+  command => undef,
+  ports   => ['53:53', '53:53/udp'],
+  image   => "jenkinsciinfra/bind:${image_tag}",
+  volumes => ['/etc/bind/local:/etc/bind/local'],
+}
+~~~
 
 ---
 
@@ -540,11 +554,6 @@ We have some different pipelines to describe:
 
 * Puppet (configuration management)
 * Containers (packaging)
-
----
-
-
--> *insert Jenkins Web UI screenshot here* <-
 
 ---
 
@@ -572,11 +581,16 @@ traditionally, a series of jobs
                 *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
                 *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
 
+
+---
+
+
+-> *insert Jenkins Web UI screenshot here* <-
+
 ---
 
 
 # Pipeline plugin
-## formerly known as Workflow
 
 * Define your delivery pipeline as code
 * Feed it to Jenkins
@@ -588,32 +602,11 @@ traditionally, a series of jobs
 
 -> *let's look at a basic Jenkinsfile* <-
 
----
-
-
--> # neat <-
-
----
-
-
--> *how about something more complex* <-
 
 ---
 
 
 -> # neat <-
-
----
-
-
-# Gaps in Pipeline
-
-* Developing a Jenkinsfile can be tricky
-** [experimental pipeline editor plugin](https://github.com/jenkinsci/pipeline-editor-plugin)
-* Currently no good pipeline visualization
-** [Workflow Stage View](https://dzone.com/refcardz/continuous-delivery-with-jenkins-workflow)
-* Putting manual deployment gates in is
-  [tricky](https://issues.jenkins-ci.org/browse/JENKINS-27039)
 
 ---
 
@@ -649,10 +642,10 @@ Roughly speaking: Git branch == environment
 ▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜
 ▌pull request #1▐
 ▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
-              ↓
+
 ▌staging ⎇    ↓ Automated tests, review, merge
 ▙▄▄▄▄▄▄▄▄▄▄▄▄▄x▄▄▄
-               ↘
+
 ▌production ⎇    ↘ Manual merge, auto-deploy
 ▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄x▄▄▄▄▄▄▄▄▄▄▄
 
@@ -714,7 +707,7 @@ Roughly speaking: Git branch == environment
 
 # oh hey, tell me things
 
-wouldn't a better way to manage and prosion Jenkins with code be nice?
+wouldn't a better way to manage and provision Jenkins with code be nice?
 
 
 -> [JENKINS-31094](https://issues.jenkins-ci.org/browse/JENKINS-31094) <-
@@ -730,6 +723,6 @@ wouldn't a better way to manage and prosion Jenkins with code be nice?
 ## Resources
 
 * [jenkins-infra](https://github.com/jenkins-infra)
-* [workflow-examples](https://github.com/jenkinsci/workflow-examples)
-* [Pipeline <3 Jenkins](https://jenkins-ci.org/solutions/pipeline)
-* [Docker <3 Jenkins](https://jenkins-ci.org/solutions/docker)
+* [pipeline-examples](https://github.com/jenkinsci/pipeline-examples)
+* [Pipeline <3 Jenkins](https://jenkins.io/solutions/pipeline)
+* [Docker <3 Jenkins](https://jenkins.io/solutions/docker)
