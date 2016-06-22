@@ -272,15 +272,6 @@ Model your delivery pipeline in *code*.
 ---
 
 
-# Pipeline plugin(s)
-
-* [CloudBees Docker Pipeline plugin](https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Pipeline+Plugin)
-* [Pipeline Stage View plugin](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Stage+View+Plugin)
-* [GitHub Organization Folder](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+Organization+Folder+Plugin)
-
----
-
-
 # Pipeline plugin
 
 integrating with existing jobs
@@ -298,6 +289,15 @@ node {
 stage 'Deploy'
 build 'my-legacy-deploy-job'
 ~~~
+
+---
+
+
+# Pipeline plugin(s)
+
+* [CloudBees Docker Pipeline plugin](https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Pipeline+Plugin)
+* [Pipeline Stage View plugin](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Stage+View+Plugin)
+* [GitHub Organization Folder](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+Organization+Folder+Plugin)
 
 ---
 
@@ -359,7 +359,7 @@ there are multiple layers of testing
 ** [serverspec](http://serverspec.org)
 ** [beaker](https://github.com/puppetlabs/beaker)
 * monitoring
-** [serverspec](http://serverspec.org)
+** serverspec
 ** [Datadog](https://www.datadoghq.com/)
 
 ---
@@ -760,7 +760,7 @@ Roughly speaking: Git branch == environment
 
 -> # Continuous Delivery makes things *easier* <-
 
-* Your pipeline implemented as code is the best kind of documentation
+* Your pipeline in code: the best kind of documentation
 * Testing makes fire-drills less prevalent
 * Easier to make incremental changes
 
