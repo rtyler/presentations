@@ -76,21 +76,21 @@ Affilliated with [SPI](http://spi-inc.org)
 # Project Infrastructure
 
 * Build infrastructure
-** Jenkins master
+** [Jenkins master(s)](https://ci.jenkins.io)
 ** Jenkins agents
 * Developer Tools
 ** JIRA
 ** Confluence
-** IRC bot
+** IRC bots
 ** Code quality reporters
 * Release infrastructure
 ** Apache/MirrorBrain
 ** Jenkins
-** Ratings app
+** Release Rating
 * Project tooling
-** MeetingBot
+** Account management app
 ** LDAP
-** Account app
+** Bots
 
 ---
 
@@ -122,10 +122,10 @@ Affilliated with [SPI](http://spi-inc.org)
 * [Datadog](https://datadoghq.com) + [Pagerduty](https://pagerduty.com)
 * DOCKER. *DOCKER*. *_DOCKER_*.
 * More development tools
+** [r10k](https://github.com/puppetlabs/r10k)
 ** [puppet-lint](http://puppet-lint.com/)
 ** [rspec-puppet](http://rspec-puppet.com/)
 ** [serverspec](http://serverspec.org/)
-** [r10k](https://github.com/puppetlabs/r10k)
 
 ---
 
@@ -213,6 +213,95 @@ deploy production when the organization is ready
 ---
 
 
+# Jenkins as part of CI/CD
+
+traditionally, a series of jobs
+
+▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*
+▌development▐ ⇉ *▌build▐* ⇉ ▌archive▐ ⇉ *▌test▐*
+▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*
+
+---
+
+
+-> *insert Jenkins Web UI screenshot here* <-
+
+---
+
+
+# Jenkins as the CD Hub
+
+
+▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   *▛▀▀▀▀▀▀▀▜*   *▛▀▀▀▀▜*
+▌development▐ ⇉ *▌build▐* ⇉ *▌archive▐* ⇉ *▌test▐*
+▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   *▙▄▄▄▄▄▄▄▟*   *▙▄▄▄▄▟*
+                                        ↓
+                *▛▀▀▀▀▀▀▜*   *▛▀▀▀▀▀▜*     ↙
+                *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
+                *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
+
+---
+
+
+# Pipeline plugin
+
+* Define your delivery [pipeline as code](https://jenkins.io/doc/pipeline)
+* Feed it to Jenkins
+* Enjoy a tasty beverage
+
+---
+
+# Pipeline plugin
+
+Model your delivery pipeline in *code*.
+
+* Check it into Git
+* Code review it
+* Iterate on it
+
+---
+
+
+-> *let's look at a basic Jenkinsfile* <-
+
+---
+
+
+-> # neat <-
+
+---
+
+
+# Pipeline plugin(s)
+
+* [CloudBees Docker Pipeline plugin](https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Pipeline+Plugin)
+* [Pipeline Stage View plugin](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Stage+View+Plugin)
+* [GitHub Organization Folder](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+Organization+Folder+Plugin)
+
+---
+
+
+# Pipeline plugin
+
+integrating with existing jobs
+[step docs](https://jenkins.io/doc/pipeline/steps)
+
+~~~
+stage 'Build'
+build 'my-preexisting-job'
+
+stage 'Prepare Deploy'
+node {
+  sh './do-something-special.sh'
+}
+
+stage 'Deploy'
+build 'my-legacy-deploy-job'
+~~~
+
+---
+
+
 # Infrastructure is hard
 
 * *Resources*
@@ -283,6 +372,7 @@ there are multiple layers of testing
 
 ---
 
+
 # Unit testing
 
 a contrived example
@@ -345,6 +435,11 @@ describe 'jenkins::repo' do
     it { should contain_class 'apt' }
     it { should contain_apt__source 'jenkins' }
   end
+
+  context 'on RedHat-like systems' do
+    let(:facts) { {:osfamily => 'redhat' } }
+    it { should contain_yumrepo 'jenkins' }
+  end
 end
 ~~~
 
@@ -366,12 +461,6 @@ omg plz write rspec-puppet)
 -> # neat <-
 
 ---
-
-
-*let's look at some real stuff*
-
----
-
 
 -> # quick refresher on how puppet works <-
 
@@ -402,9 +491,11 @@ end
 
 ---
 
+
 # Acceptance testing
 
-sharing behaviors across hosts
+build on top of good tools,
+defining shared behaviors for hosts
 
 ~~~
 shared_examples 'a standard Linux host' do
@@ -429,7 +520,7 @@ end
 
 # Acceptance testing
 
-using shared behaviors
+using those shared behaviors
 
 ~~~
 describe 'www-host' do
@@ -461,6 +552,7 @@ end
 
 ---
 
+
 # Testing Infrastructure
 
 
@@ -486,10 +578,10 @@ there are multiple layers of testing
 ---
 
 
-# Reproducible Infrastructure
+# Consistent Infrastructure
 
 
-Consistent, repeatable, environments
+Consistent, repeatable, applications/environments
 
 * VM images
 * Containers
@@ -497,7 +589,8 @@ Consistent, repeatable, environments
 
 ---
 
-# Reproducible Infrastructure
+
+# Consistent Infrastructure
 
 
 DOCKER
@@ -580,85 +673,6 @@ docker::run { 'bind':
 ---
 
 
--> # where does Jenkins fit in the picture? <-
-
-We have some different pipelines to describe:
-
-* Puppet (configuration management)
-* Containers (packaging)
-
----
-
-
-# Jenkins as part of CI/CD
-
-traditionally, a series of jobs
-
-
-▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   ▛▀▀▀▀▀▀▀▜   *▛▀▀▀▀▜*
-▌development▐ ⇉ *▌build▐* ⇉ ▌archive▐ ⇉ *▌test▐*
-▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   ▙▄▄▄▄▄▄▄▟   *▙▄▄▄▄▟*
-
----
-
-
-# Jenkins as the CD Hub
-
-
-▛▀▀▀▀▀▀▀▀▀▀▀▜   *▛▀▀▀▀▀▜*   *▛▀▀▀▀▀▀▀▜*   *▛▀▀▀▀▜*
-▌development▐ ⇉ *▌build▐* ⇉ *▌archive▐* ⇉ *▌test▐*
-▙▄▄▄▄▄▄▄▄▄▄▄▟   *▙▄▄▄▄▄▟*   *▙▄▄▄▄▄▄▄▟*   *▙▄▄▄▄▟*
-                                        ↓
-                *▛▀▀▀▀▀▀▜*   *▛▀▀▀▀▀▜*     ↙
-                *▌deploy▐* ⇇ *▌stage▐* ⇇ ⇇
-                *▙▄▄▄▄▄▄▟*   *▙▄▄▄▄▄▟*
-
----
-
-
--> *insert Jenkins Web UI screenshot here* <-
-
----
-
-
-# Pipeline plugin
-
-* Define your delivery [pipeline as code](https://jenkins.io/doc/pipeline)
-* Feed it to Jenkins
-* Enjoy a tasty beverage
-
----
-
-# Pipeline plugin
-
-Model your delivery pipeline in *code*.
-
-* Check it into Git
-* Code review it
-* Iterate on it
-
----
-
-
-
--> *let's look at a basic Jenkinsfile* <-
-
----
-
-
--> # neat <-
-
----
-
-
-# Pipeline plugin(s)
-
-* [Pipeline Stage View  plugin](https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Stage+View+Plugin)
-* [GitHub Organization Folder](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+Organization+Folder+Plugin)
-
----
-
-
 -> but wait <-
 
 ---
@@ -681,6 +695,14 @@ Roughly speaking: Git branch == environment
 
 ---
 
+# Webhooks complete the pipeline
+
+* GitHub pings [r10k webhook server](https://github.com/acidprime/r10k#webhook-support)
+* r10k deploys environment
+* puppet agents pick up changes
+
+---
+
 
 # jenkins-infra pipeline
 
@@ -697,16 +719,26 @@ Roughly speaking: Git branch == environment
 
 ---
 
-# Webhooks complete the pipeline
 
-* GitHub pings [r10k webhook server](https://github.com/acidprime/r10k#webhook-support)
-* r10k deploys environment
-* puppet agents pick up changes
+-> # what is missing? <-
 
 ---
 
 
--> # what is missing? <-
+# Missing pieces
+
+* Tie delivery back into Jenkins with the [Puppet plugin](https://wiki.jenkins-ci.org/display/JENKINS/Puppet+Plugin)
+* [beaker](https://github.com/puppetlabs/beaker) + Docker as Vagrant/serverspec replacement
+
+---
+
+
+# Migration to Azure
+
+* Continuous delivery of [Terraform](https://terraform.io) plans
+* Creating VM images via Jenkins
+* Better sizing of "machines" to their role
+* [Blue-Green deployments](http://martinfowler.com/bliki/BlueGreenDeployment.html)
 
 ---
 
@@ -721,30 +753,16 @@ Roughly speaking: Git branch == environment
 ---
 
 
-# Missing pieces
+-> # Continuous Delivery makes things *easier* <-
 
-* Tie delivery back into Jenkins with the [Puppet plugin](https://wiki.jenkins-ci.org/display/JENKINS/Puppet+Plugin)
-* [beaker](https://github.com/puppetlabs/beaker) + Docker as Vagrant/serverspec replacement
-* Docker Swarm for burstable container capacity
-
----
-
-
-# Migration to Azure
-
-* Continuous delivery of [Terraform](https://terraform.io) plans
-* Better sizing of "machines" to their role
-* Creating VM images via Jenkins
-* [Blue-Green deployments](http://martinfowler.com/bliki/BlueGreenDeployment.html)
+* Your pipeline implemented as code is the best kind of documentation
+* Testing makes fire-drills less prevalent
+* Easier to make incremental changes
 
 ---
 
 
-# we want you!
-
-* #jenkins-infra on [Freenode](irc://irc.freenode.net/#jenkins-infra)
-* [jenkins-infra](http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra) mailing list
-* [jenkins-infra](https://github.com/jenkins-infra) on GitHub
+-> # Only automate the things you care about <-
 
 ---
 
@@ -754,6 +772,15 @@ wouldn't a better way to manage and provision Jenkins with code be nice?
 
 
 -> [JENKINS-31094](https://issues.jenkins-ci.org/browse/JENKINS-31094) <-
+
+---
+
+
+# we want you!
+
+* #jenkins-infra on [Freenode](irc://irc.freenode.net/#jenkins-infra)
+* [jenkins-infra](http://lists.jenkins-ci.org/mailman/listinfo/jenkins-infra) mailing list
+* [jenkins-infra](https://github.com/jenkins-infra) on GitHub
 
 ---
 
