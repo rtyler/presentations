@@ -1,10 +1,9 @@
 #!groovy
 
-def nodeLabel = 'docker'
 def dockerImage = 'rtyler/jenkins-infra-builder'
 
 stage 'Linting'
-node(nodeLabel) {
+node('docker') {
     docker.image(dockerImage).inside {
         checkout scm
         sh 'bundle install && bundle exec rake lint'
@@ -12,7 +11,7 @@ node(nodeLabel) {
 }
 
 stage 'RSpec'
-node(nodeLabel) {
+node('docker') {
     docker.image(dockerImage).inside {
         checkout scm
         sh 'bundle install && bundle exec rake spec'
@@ -20,7 +19,7 @@ node(nodeLabel) {
 }
 
 stage 'Verify BIND9 Zonefiles'
-node(nodeLabel) {
+node('docker') {
     docker.image(dockerImage).inside {
         sh "/usr/sbin/named-checkzone jenkins-ci.org dist/profile/files/bind/jenkins-ci.org.zone"
     }

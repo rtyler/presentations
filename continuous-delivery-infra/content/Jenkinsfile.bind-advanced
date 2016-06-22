@@ -1,0 +1,34 @@
+#!groovy
+
+def imageName = 'jenkinsciinfra/bind'
+def imageTag = new Date().format('YMd_HmS')
+
+node('docker') {
+    checkout scm
+
+    stage 'Build'
+    def whale = docker.build("${imageName}:${imageTag}")
+
+    stage 'Container Test'
+    /* Run some commands inside an instance of the container */
+    whale.inside {
+        sh 'which named'
+    }
+
+    stage 'Acceptance Test'
+    /* grab our shared acceptance tests */
+    git 'https://github.com/rtyler/make-believe-serverspec.git'
+
+    /* Run the container in the background, then execute our tests */
+    whale.withRun('--port 5053:53') { container ->
+        echo "Running container id: ${container.id}"
+
+        dir('make-believe-serverspec') {
+            sh 'bundle exec rake spec'
+        }
+    }
+
+
+    stage 'Deploy'
+    whale.push()
+}

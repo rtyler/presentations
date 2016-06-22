@@ -5,8 +5,14 @@ node('docker') {
     /* provided by the CloudBees Docker Pipeline plugin */
     docker.image('java:8-jdk').inside {
         checkout scm
+
+	/* invoke our Gradle build system */
         sh './gradlew -Si'
+
+	/* archive our artifacts for posterity */
         archive includes: "build/**/*.jar"
+
+	/* stash some files for a later stage of the pipeline */
         stash name: 'myjavaapp', includes: 'build/**/*.jar'
     }
 }
@@ -14,8 +20,12 @@ node('docker') {
 stage 'Test'
 node('docker') {
     docker.image('java:8-jre').inside {
+    	/* grab our shared acceptance tests that live somewhere else */
         git 'https://git/rtyler/acceptance-test-harness'
+
+	/* unstash the files under test */
         unstash 'myjavaapp'
+
         sh './run-acceptance-tests.sh'
     }
 }
