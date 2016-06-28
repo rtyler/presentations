@@ -11,3 +11,5 @@ the link::http://jruby-gradle.org[JRuby/Gradle] toolchain
 ----
 
 The presentation will be generated in: `build/asciidoc/deckjs/preso.html`
+
+Example
